@@ -1,0 +1,8 @@
+BM25Similarity,0.22227030
+ClassicSimilarityFactory,0.22227030
+ClassicSimilarityFactory,0.18212477
+LMDirichletSimilarityFactory,0.17400521
+LMJelinekMercerSimilarityFactory,0.20472313
+PayloadScoringSimilarityWrapper,0.20472313
+SchemaSimilarityFactory,0.22227030
+SchemaSimilarityFactory,0.18212477
