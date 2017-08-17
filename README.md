@@ -1,1 +1,1 @@
-# DSL-BiomedicalQueryExpansion
+# Biomedical Query Expansion (Data Science Lab, KICS-UET)
