@@ -3,6 +3,7 @@
 
 # Directories
 target/
+data/
 
 # Log file
 *.log
