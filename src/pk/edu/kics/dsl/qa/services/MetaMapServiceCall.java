@@ -7,7 +7,7 @@ package pk.edu.kics.dsl.qa.services;
 
 import java.io.IOException;
 
-import pk.edu.kics.dsl.qa.util.*;
+import pk.edu.kics.dsl.qa.util.GenericObject;
 import pk.edu.kics.dsl.qa.util.replace_UTF8;
 
 /**

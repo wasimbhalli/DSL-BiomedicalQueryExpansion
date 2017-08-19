@@ -17,25 +17,28 @@ import pk.edu.kics.dsl.qa.util.SolrHelper;
 
 public class BiomedQA {
 
-	final static String experimentClass = "MostFrequentTerms";
+	final static String experimentClass = "GlobalQueryExpansion";
 	final static String questionPath = "resources/2007topics.txt";
 
 	public static void main(String[] args) throws IOException, SolrServerException {
 		SolrHelper solrHelper = new SolrHelper();
 		ArrayList<Question> questionsList = IOHelper.ReadQuestions(questionPath);
+		String qeClass = "pk.edu.kics.dsl.qa.qe." + experimentClass;
+		try {
+		QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
+		qe.getMetamapSynonyms("cancer");
 
-		for (Question question : questionsList) {
+		/*for (Question question : questionsList) {
 			
-			String qeClass = "pk.edu.kics.dsl.qa.qe." + experimentClass;
-			try {
 
-				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
 				String relevantTerms = qe.getRelevantTerms(question);
 				question.setQuestion(qe.mergeTerms(question.getQuestion(), relevantTerms));
 				ArrayList<SolrResult> resultsList = solrHelper.submitQuery(question, 0, 1000);
 				IOHelper.writeResult(resultsList);				
-				
-			} catch (InstantiationException e) {
+		 	
+		}*/	
+		}	
+			 catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -45,9 +48,8 @@ public class BiomedQA {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+
 
 		Evaluation.evaluateResults(experimentClass);
-	}
-
+}
 }
