@@ -26,6 +26,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 	}
 	
 	public void SetAllContentWords() {
+		allContentWords = new ArrayList<String>();
 		for (Iterator iterator = resultsList.iterator(); iterator.hasNext();) {
 			SolrResult solrResult = (SolrResult) iterator.next();
 			ArrayList<String> contentWords = StringUtil.deleteStopWord(solrResult);
