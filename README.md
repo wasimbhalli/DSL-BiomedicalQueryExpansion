@@ -49,10 +49,14 @@
     
     It will compiles all the dependencies in your **_pom.xml_** file
 
-* Some files are required to run code<br>
+* To run code properly the following files must be download and extract to their proper place<br>
 _Following files must be included in you **resources** dir_
 1. Downlaod [_trecgen2007.gold.standard.tsv.txt_](http://skynet.ohsu.edu/trec-gen/data/2007/trecgen2007.gold.standard.tsv.txt)
 2. Downlaod [_2007topics.txt_](http://skynet.ohsu.edu/trec-gen/data/2007/2007topics.txt)
+3. Download [Wordnet-3.0](https://wordnet.princeton.edu/wordnet/download/current-version/#nix).
+   Create a new directory in the main project named as **_data_** and extract the contants of _wordnet-3.0_ inside this **_data_** dir.
 4. Add a folder name **_script_** under the resource dir
 5. Download [_trecgen2007_score.py_](http://skynet.ohsu.edu/trec-gen/data/2007/trecgen2007_score.py) and save under **_script_** dir
-6. Now create a dir named **_DocResult_** under resource dir  --> _(This directory will be used for the output of results comparision)_
+6. Download the [Sementic Types Mappings](https://metamap.nlm.nih.gov/Docs/SemanticTypes_2013AA.txt) and [Sementic Group File](https://metamap.nlm.nih.gov/Docs/SemGroups_2013.txt).
+also create a dir named  **_Mappings_** under resources dir and put the two Sementic Types and Sementic Group Files.
+7. Now create a dir named **_DocResult_** under resource dir  --> _(This directory will be used for the output of results comparision)_
