@@ -46,7 +46,7 @@
 * Open terminal in you project root directory and type<br>
 	_mvn compile_
     
-    It will compiles all the dependencies in your **_pom.xml_** file
+It will compiles all the dependencies in your **_pom.xml_** file
 
 * To run code properly the following files must be download and extract to their proper place<br>
 _Following files must be included in you **resources** dir_
