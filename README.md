@@ -2,8 +2,8 @@
 
 ## Pre-requisties ###
 
-* Install Jdk 7 or higher
-* Install Jre latest version
+* Install JDK 7 or higher
+* Install JRE latest version
 * Install Eclipse
 * Install manven latest version
 	* Open terminal and type: _sudo apt-get install maven_
