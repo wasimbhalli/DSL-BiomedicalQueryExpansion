@@ -10,7 +10,6 @@
 * Download and install the [solr-6.6.0](http://lucene.apache.org/solr/downloads.html) or higher from it official site
 * Download genomic data repository from [TREC 2007 Genomics Track Data](http://skynet.ohsu.edu/trec-gen/2007data.html)
 
-
 ## How to configure the solr
 * Run solr service by default it use port 8983. To check in your browser type: _localhost:8983_
 + Create a new core or collection, the default core/colletion directory is 
