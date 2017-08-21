@@ -15,7 +15,6 @@ import pk.edu.kics.dsl.qa.util.ValueComparator;
 
 public class MostFrequentTerms extends LocalQueryExpansion {
 
-	ArrayList<String> allContentWords = new ArrayList<String>();
 	final int NUMBER_OF_TERMS = 10;
 
 	@Override
@@ -29,7 +28,7 @@ public class MostFrequentTerms extends LocalQueryExpansion {
 			e.printStackTrace();
 		}
 
-		return StringUtils.join(getOrderedTermsByFrequency(allContentWords), " ");
+		return StringUtils.join(getOrderedTermsByFrequency(super.allContentWords), " ");
 	}
 
 	private ArrayList<String> getOrderedTermsByFrequency(ArrayList<String> allContentWords) {
