@@ -71,7 +71,7 @@ public class CollectionHelper {
 		return sortedMap;
 	}
 
-	public static <T,U> String getTopTerms(Map<T,U> terms, int numOfTerms) {
+	public static <T,U> String getTopTerms(Map<T,U> terms, int termsToSelect) {
 
 		StringBuilder sb = new StringBuilder();
 		int counter = 1;
@@ -79,7 +79,7 @@ public class CollectionHelper {
 			String key = (String) entry.getKey();
 			sb.append(key).append(" ");
 			
-			if(counter++>=numOfTerms) break;
+			if(counter++>=termsToSelect) break;
 		}
 
 		return sb.toString();

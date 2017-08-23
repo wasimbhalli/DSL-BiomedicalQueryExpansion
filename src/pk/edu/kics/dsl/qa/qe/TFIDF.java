@@ -31,7 +31,12 @@ public class TFIDF extends LocalQueryExpansion {
 		}
 
 		for (String key : dictionary) {
-			int docFrequency = documentFrequency.get(key);
+			//TODO: Fix it in case any solution is found for commas (Numbers with comma never found!)
+			int docFrequency = BiomedQA.TOTAL_DOCUMENTS;
+			if(documentFrequency.containsKey(key)) {
+				docFrequency = documentFrequency.get(key);
+			}
+			
 			int termFrequency = relevantTermsTotalFrequency.get(key);
 			termsTFIDF.put(key, computeTfIdfWeight(termFrequency, docFrequency, BiomedQA.DOCUMENTS_FOR_QE));
 		}

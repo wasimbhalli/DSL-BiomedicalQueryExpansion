@@ -20,7 +20,7 @@ public class BiomedQA {
 	public final static int TOTAL_DOCUMENTS = 162259;
 	
 	final static int TOP_TERMS_TO_SELECT = 10;
-	final static String EXPERIMENT = "MostFrequentTerms";
+	final static String EXPERIMENT = "TFIDF";
 	final static String QUESTIONS_PATH = "resources/2007topics.txt";
 
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
