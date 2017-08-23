@@ -17,7 +17,7 @@ import pk.edu.kics.dsl.qa.util.MetaMapResults;
 public class GlobalQueryExpansion extends QueryExpansion {
 
 	@Override
-	public String getRelevantTerms(Question question) {
+	public String getRelevantTerms(Question question, int termsToSelect) {
 		// TODO Auto-generated method stub
 		return null;
 	}

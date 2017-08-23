@@ -4,54 +4,45 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.solr.client.solrj.SolrServerException;
+import org.json.JSONException;
+import org.json.simple.parser.ParseException;
 
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
-import pk.edu.kics.dsl.qa.qe.MostFrequentTerms;
 import pk.edu.kics.dsl.qa.qe.QueryExpansion;
 import pk.edu.kics.dsl.qa.util.Evaluation;
 import pk.edu.kics.dsl.qa.util.IOHelper;
 import pk.edu.kics.dsl.qa.util.SolrHelper;
 
-// Set the Core Name in SolrHelper (specific to the core you have in your Solr installation)
-
 public class BiomedQA {
 
-	final static String experimentClass = "GlobalQueryExpansion";
-	final static String questionPath = "resources/2007topics.txt";
+	public final static int DOCUMENTS_FOR_QE = 10;
+	public final static int TOTAL_DOCUMENTS = 162259;
+	
+	final static int TOP_TERMS_TO_SELECT = 10;
+	final static String EXPERIMENT = "MostFrequentTerms";
+	final static String QUESTIONS_PATH = "resources/2007topics.txt";
 
-	public static void main(String[] args) throws IOException, SolrServerException {
+	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
+		
+		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
+		String qeClass = "pk.edu.kics.dsl.qa.qe." + EXPERIMENT;
 		SolrHelper solrHelper = new SolrHelper();
-		ArrayList<Question> questionsList = IOHelper.ReadQuestions(questionPath);
-		String qeClass = "pk.edu.kics.dsl.qa.qe." + experimentClass;
+	
 		try {
-		QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-		qe.getMetamapSynonyms("cancer");
+			QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
 
-		/*for (Question question : questionsList) {
-			
-
-				String relevantTerms = qe.getRelevantTerms(question);
+			for (Question question : questionsList) {
+				String relevantTerms = qe.getRelevantTerms(question, TOP_TERMS_TO_SELECT);
 				question.setQuestion(qe.mergeTerms(question.getQuestion(), relevantTerms));
 				ArrayList<SolrResult> resultsList = solrHelper.submitQuery(question, 0, 1000);
-				IOHelper.writeResult(resultsList);				
-		 	
-		}*/	
-		}	
-			 catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				IOHelper.writeResult(resultsList);	
 			}
-
-
-		Evaluation.evaluateResults(experimentClass);
-}
-
-
+		}	
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Evaluation.evaluateResults(EXPERIMENT);
+	}
 }

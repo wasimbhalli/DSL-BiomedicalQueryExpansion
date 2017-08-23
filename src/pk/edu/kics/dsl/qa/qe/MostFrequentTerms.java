@@ -1,37 +1,29 @@
 package pk.edu.kics.dsl.qa.qe;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 
 import pk.edu.kics.dsl.qa.entity.Question;
+import pk.edu.kics.dsl.qa.util.CollectionHelper;
 import pk.edu.kics.dsl.qa.util.ValueComparator;
 
 public class MostFrequentTerms extends LocalQueryExpansion {
 
-	final int NUMBER_OF_TERMS = 10;
-
 	@Override
-	public String getRelevantTerms(Question question) {
-
-		// Call to server and populate resultsList and content words method
+	public String getRelevantTerms(Question question, int termsToSelect) {
 		try {
-			super.setResultsList(question);
-			super.SetAllContentWords();
-		} catch (SolrServerException | IOException e) {
+			super.init(question);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return StringUtils.join(getOrderedTermsByFrequency(super.allContentWords), " ");
+		
+		Map<String,Integer> terms = CollectionHelper.sortByComparatorInt(relevantTermsTotalFrequency, false); 
+		return CollectionHelper.getTopTerms(terms, termsToSelect);
 	}
 
-	private ArrayList<String> getOrderedTermsByFrequency(ArrayList<String> allContentWords) {
+	
+	
+	/*private ArrayList<String> getOrderedTermsByFrequency(ArrayList<String> allContentWords) {
 
 		Map<Object, Long> occurrences = allContentWords.stream()
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -49,13 +41,8 @@ public class MostFrequentTerms extends LocalQueryExpansion {
 		}
 
 		return keyList;
-	}
+	}*/
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Map sortByValue(Map unsortedMap) {
-		Map sortedMap = new TreeMap(new ValueComparator(unsortedMap));
-		sortedMap.putAll(unsortedMap);
-		return sortedMap;
-	}
+	
 
 }
