@@ -4,6 +4,7 @@
 # Directories
 target/
 data/
+resources/DocResult/
 
 # Log file
 *.log
