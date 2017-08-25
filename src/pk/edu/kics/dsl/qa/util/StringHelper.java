@@ -6,14 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.en.KStemFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.AttributeFactory;
-
-import pk.edu.kics.dsl.qa.BiomedQA;
 
 public class StringHelper {
 
@@ -28,18 +29,25 @@ public class StringHelper {
 		Map<String, String> param = new HashMap<>();
 		param.put("luceneMatchVersion", "LUCENE_66");
 		
+		
 		LowerCaseFilterFactory lowerCaseFactory = new LowerCaseFilterFactory(param);
 		TokenStream tokenStream = lowerCaseFactory.create(tokenizer);
 		
+		KStemFilterFactory kstemFilterFactory = new KStemFilterFactory(param);
+		TokenStream stemTokenStream = kstemFilterFactory.create(tokenStream);
+		
 		//StopFilterFactory stopFilterFactory = new StopFilterFactory(param);
-		//TokenStream stopWordRemoveStream = stopFilterFactory.create(tokenStream);
+		//TokenStream stopWordRemoveStream = stopFilterFactory.create(stemTokenStream);
+		
+		CharArraySet stopWords = EnglishAnalyzer.getDefaultStopSet();
+		TokenStream postStopStream = new StopFilter(stemTokenStream, stopWords);
 
-		while(tokenStream.incrementToken()) {
+		while(postStopStream.incrementToken()) {
 			String term = attr.toString();
 			tokens.add(term);
 		}
 
-		tokenizer.close();
+		postStopStream.close();
 		return tokens;
 	}
 	
