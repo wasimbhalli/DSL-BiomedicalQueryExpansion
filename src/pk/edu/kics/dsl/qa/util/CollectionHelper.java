@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import pk.edu.kics.dsl.qa.BiomedQA;
+
 public class CollectionHelper {
 
 	public static Map<String, Double> sortByComparator(Map<String, Double> unsortMap, final boolean order)
@@ -77,11 +79,20 @@ public class CollectionHelper {
 		int counter = 1;
 		for (Map.Entry<T,U> entry : terms.entrySet()) {
 			String key = (String) entry.getKey();
-			sb.append(key).append(" ");
 			
+			if(!BiomedQA.DISPLAY_RESULTS) {
+				sb.append(key).append(" ");
+			}
+			else {
+				sb.append(key).append("-").append(terms.get(key)).append("\n");
+			}
 			if(counter++>=termsToSelect) break;
 		}
-
+		
+		if(BiomedQA.DISPLAY_RESULTS) {
+			System.out.println("Top Terms: " + sb.toString());
+		}
+		
 		return sb.toString();
 	}
 

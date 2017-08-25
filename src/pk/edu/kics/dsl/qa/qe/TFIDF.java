@@ -29,7 +29,7 @@ public class TFIDF extends LocalQueryExpansion {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 		for (String key : dictionary) {
 			//TODO: Fix it in case any solution is found for commas (Numbers with comma never found!)
 			int docFrequency = BiomedQA.TOTAL_DOCUMENTS;

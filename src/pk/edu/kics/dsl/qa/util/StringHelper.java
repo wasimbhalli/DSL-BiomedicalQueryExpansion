@@ -13,6 +13,8 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.AttributeFactory;
 
+import pk.edu.kics.dsl.qa.BiomedQA;
+
 public class StringHelper {
 
 	public static ArrayList<String> analyzeContent(String content) throws IOException {
@@ -57,4 +59,5 @@ public class StringHelper {
 	public static String getTermsByComma(ArrayList<String> terms) {
 		return String.join(",", terms);
 	}
+	
 }

@@ -12,18 +12,20 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
 
 public class SolrHelper {
 
 	static String urlString = "http://localhost:8983/solr/genomic_html";
-	SolrClient solr;
-	SolrQuery solrQuery;
+	static SolrClient solr;
+	static SolrQuery solrQuery;
 
 	public SolrHelper() {
 		solr = new HttpSolrClient.Builder(urlString).build();
@@ -75,7 +77,7 @@ public class SolrHelper {
 
 		return getDFDictionary(body);
 	}
-	
+
 	public static HashMap<String, Integer> getDFDictionary(JSONObject body) throws JSONException {
 		HashMap<String, Integer> allTerms = new HashMap<>();
 		Iterator<?> keys = body.keys();
@@ -87,4 +89,83 @@ public class SolrHelper {
 
 		return allTerms;
 	}
+
+	public static HashMap<String, Integer> getCorpusTermsFrequency(ArrayList<String> terms) throws IOException, ParseException, JSONException, SolrServerException {
+
+		HashMap<String, Integer> termsFrequency = new HashMap<>();
+
+		ArrayList<String> tempTermsList = new ArrayList<>();
+		for (int i = 0; i < terms.size(); i++) {
+			tempTermsList.add("ttf(" + BiomedQA.CONTENT_FIELD + "," + terms.get(i) + ")");
+			
+			// SOLR not accepting all terms together - so sending chunks of 4000
+			if(tempTermsList.size() == 4000) {
+				String concatenateTerms = String.join(",", tempTermsList);
+				termsFrequency.putAll(getCorpusTermsFrequencySubset(concatenateTerms));
+				tempTermsList.clear();
+			}
+		}
+		
+		if(tempTermsList.size()>0) {
+			String concatenateTerms = String.join(",", tempTermsList);
+			termsFrequency.putAll(getCorpusTermsFrequencySubset(concatenateTerms));
+			tempTermsList.clear();
+		}
+
+		return termsFrequency;
+	}
+
+	private static HashMap<String, Integer> getCorpusTermsFrequencySubset(String terms) throws IOException, JSONException {
+		String urlParameters  = "fl=" + terms;
+		String url = urlString + "/select?q=*:*&rows=1&wt=json&indent=true";
+		String response = HttpHelper.getResponse(url, urlParameters);
+
+		JSONObject jsonObject = new JSONObject(response);
+		JSONObject jsonResponse = (JSONObject) jsonObject.get("response");
+		JSONObject docs =  (JSONObject)(((JSONArray)jsonResponse.get("docs")).get(0));
+
+		return parseCorpusTermFrequency(docs);
+	}
+	
+	public static HashMap<String, Integer> parseCorpusTermFrequency(JSONObject docs) throws JSONException {
+		HashMap<String, Integer> allTerms = new HashMap<>();
+		Iterator<?> keys = docs.keys();
+
+		while( keys.hasNext() ) {
+			String fieldKey = (String)keys.next();
+
+			String key = fieldKey.split(",")[1];
+			key = key.substring(0, key.length() - 1);
+
+			allTerms.put(key, (int)docs.get(fieldKey));
+		}
+
+		return allTerms;
+	}
+	
+	public static long getCorpusTermsFrquencySum() throws IOException, JSONException {
+		String url = urlString + "/select?q=*:*&rows=1&wt=json&indent=true&fl=sttf(body)";
+		String response = HttpHelper.getResponse(url,"");
+
+		JSONObject jsonObject = new JSONObject(response);
+		JSONObject jsonResponse = (JSONObject) jsonObject.get("response");
+		JSONObject docs =  (JSONObject)(((JSONArray)jsonResponse.get("docs")).get(0));
+
+		return parseCorpusTermTotalFrequency(docs);
+	}
+
+	public static long parseCorpusTermTotalFrequency(JSONObject docs) throws JSONException {
+		
+		long totalTermFrequency = 0;
+		Iterator<?> keys = docs.keys();
+		
+		while( keys.hasNext() ) {
+			String fieldKey = (String)keys.next();
+			String tempValue = String.valueOf(docs.get(fieldKey));
+			totalTermFrequency = Long.parseLong(tempValue);
+		}
+
+		return totalTermFrequency;
+	}
+	
 }

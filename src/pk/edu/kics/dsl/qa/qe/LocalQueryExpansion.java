@@ -23,6 +23,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 	protected ArrayList<SolrResult> resultsList;
 	protected ArrayList<String> dictionary = new ArrayList<>();
 	protected static HashMap<String, Integer> relevantTermsTotalFrequency = new HashMap<>();
+	protected static HashMap<String, Integer> corpusTermsTotalFrequency = new HashMap<>();
 	protected static HashMap<String, Integer> documentFrequency = new HashMap<>();
 	protected Map<Integer, Map<String, Integer>> documentTermFrequencies = new HashMap<Integer, Map<String, Integer>>();
 	protected RealMatrix tdMatrix;
@@ -32,6 +33,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 		buildTermDocumentMatrix(resultsList);
 		String terms = StringHelper.getTermsByComma(dictionary);
 		documentFrequency = SolrHelper.getTermDocumentFrequency(terms);
+		corpusTermsTotalFrequency = SolrHelper.getCorpusTermsFrequency(dictionary);
 	}
 	
 	@Override

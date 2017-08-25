@@ -42,7 +42,7 @@ public class IOHelper {
 	}
 
 	// TODO: Append results of all questions in a single file
-	public static void writeResult(ArrayList<SolrResult> resultsList) throws IOException {
+	public static void writeResult(ArrayList<SolrResult> resultsList, int questionNo) throws IOException {
 
 		BufferedWriter writer;
 
@@ -65,7 +65,7 @@ public class IOHelper {
 
 		writer.flush();
 		writer.close();
-		System.out.println("Results saved successfuly: " + docResult);
+		System.out.println("Done with query: " + questionNo);
 
 	}
 }
