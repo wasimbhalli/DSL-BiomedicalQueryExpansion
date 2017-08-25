@@ -37,8 +37,28 @@ public class TFIDF extends LocalQueryExpansion {
 				docFrequency = documentFrequency.get(key);
 			}
 			
-			int termFrequency = relevantTermsTotalFrequency.get(key);
-			termsTFIDF.put(key, computeTfIdfWeight(termFrequency, docFrequency, BiomedQA.DOCUMENTS_FOR_QE));
+			for (int i = 0; i < BiomedQA.DOCUMENTS_FOR_QE; i++) {
+				Map<String, Integer> documentTerms = documentTermFrequencies.get(i);
+				
+				int termFrequency = 0;
+				if(documentTerms.containsKey(key)) {
+					termFrequency = documentTerms.get(key);
+				}
+				
+				double previousWeight = 0; 
+				
+				if(termsTFIDF.containsKey(key)) {
+					previousWeight = termsTFIDF.get(key);
+				}
+				
+				double newTermWeight = computeTfIdfWeight(termFrequency, docFrequency, BiomedQA.TOTAL_DOCUMENTS);
+				
+				termsTFIDF.put(key, previousWeight + newTermWeight );
+			}
+		}
+		
+		for (String key : dictionary) {
+			termsTFIDF.put(key, termsTFIDF.get(key)/BiomedQA.DOCUMENTS_FOR_QE);
 		}
 		
 		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsTFIDF, false);
