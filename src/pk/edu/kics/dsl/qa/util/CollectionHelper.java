@@ -84,13 +84,13 @@ public class CollectionHelper {
 				sb.append(key).append(" ");
 			}
 			else {
-				sb.append(key).append("-").append(terms.get(key)).append("\n");
+				sb.append(key).append(" ").append(entry.getValue()).append("\n");
 			}
 			if(counter++>=termsToSelect) break;
 		}
 		
 		if(BiomedQA.DISPLAY_RESULTS) {
-			System.out.println("Top Terms: " + sb.toString());
+			System.out.println(sb.toString());
 		}
 		
 		return sb.toString();
