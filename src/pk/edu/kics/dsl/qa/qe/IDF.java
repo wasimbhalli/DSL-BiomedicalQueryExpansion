@@ -30,7 +30,7 @@ public class IDF extends LocalQueryExpansion {
 			e.printStackTrace();
 		}
 		
-		for (String key : dictionary) {
+		for (String key : localDictionary) {
 			//TODO: Fix it in case any solution is found for commas (Numbers with comma never found!)
 			int docFrequency = BiomedQA.TOTAL_DOCUMENTS;
 			if(documentFrequency.containsKey(key)) {

@@ -21,14 +21,14 @@ public class KLDivergence extends LocalQueryExpansion {
 
 		int totalTermFrequency =  0;
 
-		for (String key : relevantTermsTotalFrequency.keySet()) { 
-			totalTermFrequency += relevantTermsTotalFrequency.get(key);;
+		for (String key : localTermsTotalFrequency.keySet()) { 
+			totalTermFrequency += localTermsTotalFrequency.get(key);;
 		}
 
-		for(String term:dictionary) {
+		for(String term:localDictionary) {
 			
-			double termProbabilityinRelevant = (double) relevantTermsTotalFrequency.get(term)/totalTermFrequency;
-			double termProbabilityinCorpus = (double) corpusTermsTotalFrequency.get(term)/BiomedQA.totalCorpusTermsFrquency;
+			double termProbabilityinRelevant = (double) localTermsTotalFrequency.get(term)/totalTermFrequency;
+			double termProbabilityinCorpus = (double) termsTotalFrequency.get(term)/totalCorpusTermsFrquency;
 			
 			double KLDScore = termProbabilityinRelevant * Math.log(termProbabilityinRelevant/termProbabilityinCorpus);
 

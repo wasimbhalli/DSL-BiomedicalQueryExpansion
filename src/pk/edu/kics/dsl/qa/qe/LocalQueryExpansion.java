@@ -21,19 +21,34 @@ public class LocalQueryExpansion extends QueryExpansion{
 
 	private SolrHelper solrHelper;
 	protected ArrayList<SolrResult> resultsList;
-	protected ArrayList<String> dictionary = new ArrayList<>();
-	protected static HashMap<String, Integer> relevantTermsTotalFrequency = new HashMap<>();
-	protected static HashMap<String, Integer> corpusTermsTotalFrequency = new HashMap<>();
+	
+	protected ArrayList<String> localDictionary = new ArrayList<>();
+	
+	protected static HashMap<String, Integer> localTermsTotalFrequency = new HashMap<>();
+	protected static HashMap<String, Integer> termsTotalFrequency = new HashMap<>();
+	
+	// True Positive: Number of local documents in which term is present. False Negative: In which term is absent
+	protected static HashMap<String, Integer> localDocumentFrequency = new HashMap<>();
+	
+	// False Positive: Number of documents in which term is present. True Negative: In which term is absent
 	protected static HashMap<String, Integer> documentFrequency = new HashMap<>();
+	
+	// Frequency of each term appeared in each document
 	protected Map<Integer, Map<String, Integer>> documentTermFrequencies = new HashMap<Integer, Map<String, Integer>>();
+	
+	// Term-Document Matrix
 	protected RealMatrix tdMatrix;
+	
+	protected long totalCorpusTermsFrquency = 0;
 
 	public void init(Question question) throws SolrServerException, IOException, ParseException, JSONException {
 		setSolrDocuments(question);
 		buildTermDocumentMatrix(resultsList);
-		String terms = StringHelper.getTermsByComma(dictionary);
-		documentFrequency = SolrHelper.getTermDocumentFrequency(terms);
-		corpusTermsTotalFrequency = SolrHelper.getCorpusTermsFrequency(dictionary);
+		String terms = StringHelper.getTermsByComma(localDictionary);
+		ArrayList<HashMap<String, Integer>> statistics = solrHelper.getCorpusStatistics(terms);
+		termsTotalFrequency = statistics.get(0);
+		documentFrequency = statistics.get(1);
+		totalCorpusTermsFrquency = SolrHelper.getCorpusTermsFrquencySum();
 	}
 	
 	@Override
@@ -59,27 +74,27 @@ public class LocalQueryExpansion extends QueryExpansion{
 		// Important: Normalize similarly both in getWordsFrequency and individual token while adding to dictionary
 		for (int docCounter = 0; docCounter < resultsList.size(); docCounter++) {
 			SolrResult result = resultsList.get(docCounter);
-			ArrayList<String> tokens = StringHelper.analyzeContent(result.getContent());
+			ArrayList<String> tokens = StringHelper.analyzeContent(result.getContent(), true);
 			documentTermFrequencies.put(docCounter, StringHelper.getWordsFrequency(tokens));
 
 			for (int i = 0; i < tokens.size(); i++) {
-				String currentTerm = tokens.get(i).replaceAll(",", ""); //Fix: 1000,00 to 100000
-				if(!dictionary.contains(currentTerm)) {
-					dictionary.add(currentTerm);
-					relevantTermsTotalFrequency.put(currentTerm, 0);
+				String currentTerm = StringHelper.normalizeWord(tokens.get(i));
+				if(!localDictionary.contains(currentTerm)) {
+					localDictionary.add(currentTerm);
+					localTermsTotalFrequency.put(currentTerm, 0);
 				}
 			}
 		}
 
-		tdMatrix = new Array2DRowRealMatrix(dictionary.size(), BiomedQA.DOCUMENTS_FOR_QE);
+		tdMatrix = new Array2DRowRealMatrix(localDictionary.size(), BiomedQA.DOCUMENTS_FOR_QE);
 
 		for(int docIndex=0; docIndex<BiomedQA.DOCUMENTS_FOR_QE; docIndex++) {
 			HashMap<String,Integer> TermsFrequency = (HashMap<String,Integer>) documentTermFrequencies.get(docIndex);
 
 			for (String key : TermsFrequency.keySet()) {
-				int row = ((ArrayList<String>) dictionary).indexOf(key);
-				int newCount = relevantTermsTotalFrequency.get(key) + TermsFrequency.get(key);
-				relevantTermsTotalFrequency.put(key, newCount); 
+				int row = ((ArrayList<String>) localDictionary).indexOf(key);
+				int newCount = localTermsTotalFrequency.get(key) + TermsFrequency.get(key);
+				localTermsTotalFrequency.put(key, newCount); 
 				tdMatrix.setEntry(row, docIndex, TermsFrequency.get(key));
 			}
 		}

@@ -4,7 +4,6 @@
 # Directories
 target/
 data/
-resources/DocResult/
 resources/queryResults.txt
 
 # Log file
