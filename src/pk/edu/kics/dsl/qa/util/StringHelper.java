@@ -97,8 +97,8 @@ public class StringHelper {
 		LowerCaseFilterFactory lowerCaseFactory = new LowerCaseFilterFactory(param);
 		TokenStream tokenStream = lowerCaseFactory.create(tokenizer);
 
-		KStemFilterFactory kstemFilterFactory = new KStemFilterFactory(param);
-		tokenStream = kstemFilterFactory.create(tokenStream);
+		/*KStemFilterFactory kstemFilterFactory = new KStemFilterFactory(param);
+		tokenStream = kstemFilterFactory.create(tokenStream);*/
 
 		CharArraySet stopWords = EnglishAnalyzer.getDefaultStopSet();
 		tokenStream = new StopFilter(tokenStream, stopWords);

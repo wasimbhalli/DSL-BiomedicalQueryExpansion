@@ -68,4 +68,9 @@ public class IOHelper {
 		System.out.println("Done with query: " + questionNo);
 
 	}
+
+	public static void deletePreviousResults() {
+		File f = new File(docResult);
+        f.delete();
+	}
 }

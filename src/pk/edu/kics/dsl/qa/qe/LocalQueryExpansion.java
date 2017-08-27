@@ -74,7 +74,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 		// Important: Normalize similarly both in getWordsFrequency and individual token while adding to dictionary
 		for (int docCounter = 0; docCounter < resultsList.size(); docCounter++) {
 			SolrResult result = resultsList.get(docCounter);
-			ArrayList<String> tokens = StringHelper.analyzeContent(result.getContent(), true);
+			ArrayList<String> tokens = StringHelper.analyzeContent(result.getContent(), false);
 			documentTermFrequencies.put(docCounter, StringHelper.getWordsFrequency(tokens));
 
 			for (int i = 0; i < tokens.size(); i++) {
