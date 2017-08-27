@@ -18,10 +18,9 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"NQ", "MFT", "IDF", "TFIDF", 
-			"KLDivergence", "ACC2", "ChiSquare", "OddsRatio"};
+	private final static String[] QE_TECHNIQUES = {"NQ", "MFT", "IDF"};
 	
-	//private final static String[] QE_TECHNIQUES = {"KLDivergence"};
+	//private final static String[] QE_TECHNIQUES = {"NQ", "KLDivergence"};
 
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	private final static String IR_MODEL = "BM25Similarity"; 
@@ -68,20 +67,25 @@ public class BiomedQA {
 	
 	private static void processQuestion(Question question, String qeTechnique, int counter) throws Exception {
 		
-		
 		SolrHelper solrHelper = new SolrHelper();
+		Question processedQ = new Question();
+		String relevantTerms = "";
+		String queryWords = question.getQuestion();
 		
 		if(!qeTechnique.toLowerCase().equals("nq")) {
 			String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
 			QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-			String relevantTerms = qe.getRelevantTerms(question, TOP_TERMS_TO_SELECT);
-			question.setQuestion(qe.mergeTerms(question.getQuestion(), relevantTerms));
+			relevantTerms = qe.getRelevantTerms(question, TOP_TERMS_TO_SELECT);
+			queryWords = qe.mergeTerms(queryWords, relevantTerms);
 		}
-		
-		ArrayList<String> queryWords = StringHelper.solrPreprocessor(question.getQuestion());
-		question.setQuestion(String.join(" ", queryWords));
 
-		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(question, 0, 1000);
+		ArrayList<String> finalQuery = StringHelper.solrPreprocessor(queryWords);
+
+		processedQ.setTopicId(question.topicId);
+		processedQ.setQuestion(String.join(" ", finalQuery));
+
+		// There are a maximum of ~614 documents for any particular document
+		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(processedQ, 0, 650);
 		IOHelper.writeResult(resultsList, counter);
 	}
 	
