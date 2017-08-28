@@ -42,8 +42,8 @@ public class ACC2 extends FeatureSelection {
 			termsScore.put(key, score);
 		}
 
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
+		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
 	}
 
 }
