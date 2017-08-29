@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math3.util.Precision;
+
 import pk.edu.kics.dsl.qa.BiomedQA;
 
 public class CollectionHelper {
@@ -42,7 +44,7 @@ public class CollectionHelper {
 
 		return sortedMap;
 	}
-	
+
 	public static Map<String, Integer> sortByComparatorInt(Map<String, Integer> unsortMap, final boolean order)
 	{
 		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(unsortMap.entrySet());
@@ -76,23 +78,23 @@ public class CollectionHelper {
 	public static <T,U> String getTopTerms(Map<T,U> terms, int termsToSelect) {
 
 		StringBuilder sb = new StringBuilder();
+		StringBuilder sb_debug = new StringBuilder();
+
 		int counter = 1;
 		for (Map.Entry<T,U> entry : terms.entrySet()) {
 			String key = (String) entry.getKey();
+			sb.append(key).append(" ");
 			
-			if(!BiomedQA.DISPLAY_RESULTS) {
-				sb.append(key).append(" ");
-			}
-			else {
-				sb.append(key).append(" ").append(entry.getValue()).append("\n");
+			if(BiomedQA.DISPLAY_RESULTS) {
+				sb_debug.append(key).append("(").append(Precision.round(Double.parseDouble(entry.getValue().toString()), 2)).append(") | ");
 			}
 			if(counter++>=termsToSelect) break;
 		}
-		
+
 		if(BiomedQA.DISPLAY_RESULTS) {
-			System.out.println(sb.toString());
+			System.out.println(sb_debug.toString());
 		}
-		
+
 		return sb.toString();
 	}
 

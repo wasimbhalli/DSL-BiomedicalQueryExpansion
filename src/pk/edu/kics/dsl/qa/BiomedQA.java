@@ -18,15 +18,13 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"NQ", "MFT", "IDF"};
-	
-	//private final static String[] QE_TECHNIQUES = {"NQ", "KLDivergence"};
+	private final static String[] QE_TECHNIQUES = {"TFIDF", "CoJaccard"};
 
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
-	private final static String IR_MODEL = "BM25Similarity"; 
+	//private final static String IR_MODEL = ""; 
 
 	public final static int DOCUMENTS_FOR_QE = 10;
-	private final static int TOP_TERMS_TO_SELECT = 10;
+	private final static int TOP_TERMS_TO_SELECT = 5;
 	public final static boolean DISPLAY_RESULTS = false;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
@@ -44,7 +42,7 @@ public class BiomedQA {
 			String experiment = "";
 			
 			for (int i = 0; i < QE_TECHNIQUES.length; i++) {
-				experiment = QE_TECHNIQUES[i] + "-" + IR_MODEL;
+				experiment = QE_TECHNIQUES[i];// + "-" + IR_MODEL;
 				IOHelper.deletePreviousResults();
 				processAllQuestions(questionsList, QE_TECHNIQUES[i]);
 				Evaluation.evaluateResults(experiment);

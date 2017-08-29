@@ -24,14 +24,14 @@ public class LocalQueryExpansion extends QueryExpansion{
 	
 	protected ArrayList<String> localDictionary = new ArrayList<>();
 	
-	protected static HashMap<String, Integer> localTermsTotalFrequency = new HashMap<>();
-	protected static HashMap<String, Integer> termsTotalFrequency = new HashMap<>();
+	protected HashMap<String, Integer> localTermsTotalFrequency = new HashMap<>();
+	protected HashMap<String, Integer> termsTotalFrequency = new HashMap<>();
 	
 	// True Positive: Number of local documents in which term is present. False Negative: In which term is absent
-	protected static HashMap<String, Integer> localDocumentFrequency = new HashMap<>();
+	protected HashMap<String, Integer> localDocumentFrequency = new HashMap<>();
 	
 	// False Positive: Number of documents in which term is present. True Negative: In which term is absent
-	protected static HashMap<String, Integer> documentFrequency = new HashMap<>();
+	protected HashMap<String, Integer> documentFrequency = new HashMap<>();
 	
 	// Frequency of each term appeared in each document
 	protected Map<Integer, Map<String, Integer>> documentTermFrequencies = new HashMap<Integer, Map<String, Integer>>();
@@ -49,6 +49,19 @@ public class LocalQueryExpansion extends QueryExpansion{
 		termsTotalFrequency = statistics.get(0);
 		documentFrequency = statistics.get(1);
 		totalCorpusTermsFrquency = SolrHelper.getCorpusTermsFrquencySum();
+		
+		for(String term: localDictionary) {			
+			for (int i = 0; i < resultsList.size(); i++) {
+				HashMap<String,Integer> TermsFrequency = (HashMap<String,Integer>) documentTermFrequencies.get(i);
+				if(TermsFrequency.containsKey(term)) {
+					if(localDocumentFrequency.containsKey(term)) {
+						localDocumentFrequency.put(term, localDocumentFrequency.get(term) + 1);
+					} else {
+						localDocumentFrequency.put(term, 1);
+					}
+				}
+			}
+		}
 	}
 	
 	@Override

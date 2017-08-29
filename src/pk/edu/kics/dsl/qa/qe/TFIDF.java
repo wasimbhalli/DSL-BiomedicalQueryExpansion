@@ -57,7 +57,7 @@ public class TFIDF extends LocalQueryExpansion {
 	
 
 	private double computeTfIdfWeight(int termFreq, int DocFrequency, int numDocs) {
-		long tfidf = (long) (Math.log(termFreq + 1) * Math.log(numDocs/DocFrequency));
+		long tfidf = (long) (Math.log(termFreq + 1) * Math.log((double)numDocs/DocFrequency));
 		return tfidf;
 	}
 }

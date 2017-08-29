@@ -30,8 +30,8 @@ public class ChiSquare extends FeatureSelection {
 			if(falsePositive.containsKey(key)) fp = falsePositive.get(key);
 			if(falseNegative.containsKey(key)) fn = falseNegative.get(key);
 
-			double pPos = (tp + fn)/(tp + fp + fn + tn);
-			double pNeg = (fp + tn)/(tp + fp + fn + tn);
+			double pPos = (double) (tp + fn)/(tp + fp + fn + tn);
+			double pNeg = (double) (fp + tn)/(tp + fp + fn + tn);
 			
 			double cs = t(tp, (tp + fp) * pPos) + t(fn, (fn + tn) * pPos) +
 					t(fp, (tp + fp) * pNeg) + t(tn, (fn + tn) * pNeg);

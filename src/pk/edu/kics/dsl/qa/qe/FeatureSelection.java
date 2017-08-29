@@ -59,7 +59,7 @@ public class FeatureSelection extends LocalQueryExpansion {
 		for(String key: localDictionary) {
 			int falsePositiveScore = 0;
 			if(falsePositive.containsKey(key)) falsePositiveScore = falsePositive.get(key);
-			trueNegative.put(key, BiomedQA.TOTAL_DOCUMENTS - falsePositiveScore);
+			trueNegative.put(key, (BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE - falsePositiveScore));
 		}
 
 	}
