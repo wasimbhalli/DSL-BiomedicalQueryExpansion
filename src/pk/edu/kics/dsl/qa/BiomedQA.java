@@ -18,7 +18,7 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"TFIDF", "CoJaccard"};
+	private final static String[] QE_TECHNIQUES = {"BNS","IG"};
 
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	//private final static String IR_MODEL = ""; 
