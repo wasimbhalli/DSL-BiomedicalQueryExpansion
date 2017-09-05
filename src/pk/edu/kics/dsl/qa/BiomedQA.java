@@ -18,13 +18,15 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"BNS","IG"};
+	private final static String[] QE_TECHNIQUES = {"WE"};
+	
 
+	//private final static String[] QE_TECHNIQUES = {"NQ"};
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	//private final static String IR_MODEL = ""; 
 
 	public final static int DOCUMENTS_FOR_QE = 10;
-	private final static int TOP_TERMS_TO_SELECT = 5;
+	private final static int TOP_TERMS_TO_SELECT = 10;
 	public final static boolean DISPLAY_RESULTS = false;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
@@ -82,7 +84,7 @@ public class BiomedQA {
 		processedQ.setTopicId(question.topicId);
 		processedQ.setQuestion(String.join(" ", finalQuery));
 
-		// There are a maximum of ~614 documents for any particular document
+		// There are a maximum of ~614 documents for any particular topic
 		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(processedQ, 0, 650);
 		IOHelper.writeResult(resultsList, counter);
 	}
