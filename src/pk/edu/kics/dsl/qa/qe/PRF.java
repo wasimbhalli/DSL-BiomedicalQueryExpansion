@@ -34,7 +34,7 @@ public class PRF extends LocalQueryExpansion
 			termsScore.put(term, pRelated/pNonRelated);
 		}
 		
-		Map<String,Integer> terms = CollectionHelper.sortByComparatorInt(localTermsTotalFrequency, false); 
-		return CollectionHelper.getTopTerms(terms, termsToSelect);
+		Map<String,Double> sortedTermsScore = CollectionHelper.sortByComparator(termsScore, false); 
+		return CollectionHelper.getTopTerms(sortedTermsScore, termsToSelect);
 	}
 }

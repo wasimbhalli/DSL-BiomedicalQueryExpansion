@@ -40,8 +40,8 @@ public class RSV extends LocalQueryExpansion {
 
 		}
 
-		Map<String,Integer> terms = CollectionHelper.sortByComparatorInt(localTermsTotalFrequency, false); 
-		return CollectionHelper.getTopTerms(terms, termsToSelect);
+		Map<String,Double> sortedScore = CollectionHelper.sortByComparator(termsScore, false); 
+		return CollectionHelper.getTopTerms(sortedScore, termsToSelect);
 	}
 
 
