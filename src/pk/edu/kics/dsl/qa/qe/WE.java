@@ -9,6 +9,7 @@ import java.util.Map;
 import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.util.CollectionHelper;
+import pk.edu.kics.dsl.qa.util.QEHelper;
 import pk.edu.kics.dsl.qa.util.StringHelper;
 
 public class WE extends LocalQueryExpansion {
@@ -73,47 +74,11 @@ public class WE extends LocalQueryExpansion {
 	}
 	
 	private ArrayList<String> getTop30TermsUsingTFIDF() {
-		HashMap<String, Double> termsTFIDF = new HashMap<>();
-		
-		for (String key : localDictionary) {
-			//TODO: Fix it in case any solution is found for commas (Numbers with comma never found!)
-			int docFrequency = BiomedQA.TOTAL_DOCUMENTS;
-			if(documentFrequency.containsKey(key)) {
-				docFrequency = documentFrequency.get(key);
-			}
-			
-			for (int i = 0; i < BiomedQA.DOCUMENTS_FOR_QE; i++) {
-				Map<String, Integer> documentTerms = documentTermFrequencies.get(i);
-				
-				int termFrequency = 0;
-				if(documentTerms.containsKey(key)) {
-					termFrequency = documentTerms.get(key);
-				}
-				
-				double previousWeight = 0; 
-				
-				if(termsTFIDF.containsKey(key)) {
-					previousWeight = termsTFIDF.get(key);
-				}
-				
-				double newTermWeight = computeTfIdfWeight(termFrequency, docFrequency, BiomedQA.TOTAL_DOCUMENTS);
-				
-				termsTFIDF.put(key, previousWeight + newTermWeight );
-			}
-		}
-		
-		for (String key : localDictionary) {
-			termsTFIDF.put(key, termsTFIDF.get(key)/BiomedQA.DOCUMENTS_FOR_QE);
-		}
-		// Get top 30 terms
+		HashMap<String, Double> termsTFIDF = QEHelper.getTermsTFIDF(localDictionary, documentFrequency, documentTermFrequencies);;
 		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsTFIDF, false);
 		String[] terms = CollectionHelper.getTopTerms(sortedTermsTFIDF, 30).split(" ");
 		return new ArrayList<>(Arrays.asList(terms));
 	}
-	
-	private double computeTfIdfWeight(int termFreq, int DocFrequency, int numDocs) {
-		double tfidf = (Math.log(termFreq + 1) * Math.log((double)numDocs/DocFrequency));
-		return tfidf;
-	}
+
 	
 }

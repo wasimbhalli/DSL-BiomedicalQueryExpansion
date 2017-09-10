@@ -135,7 +135,7 @@ public class StringHelper {
 				replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "");*/
 	}
 
-	public static String normalize2(String word) {
+	public static String removeSOLRSymbols(String word) {
 		return word.replaceAll(",", "").replaceAll("\"", "").replaceAll("\\{", "").
 				replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "").
 				replaceAll(":", "");

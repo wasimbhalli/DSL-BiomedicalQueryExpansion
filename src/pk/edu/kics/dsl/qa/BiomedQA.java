@@ -26,7 +26,7 @@ public class BiomedQA {
 	//private final static String IR_MODEL = ""; 
 
 	public final static int DOCUMENTS_FOR_QE = 10;
-	private final static int TOP_TERMS_TO_SELECT = 10;
+	private final static int TOP_TERMS_TO_SELECT = 5;
 	public final static boolean DISPLAY_RESULTS = false;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
