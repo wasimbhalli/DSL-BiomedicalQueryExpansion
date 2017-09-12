@@ -99,7 +99,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 			}
 		}
 
-		tdMatrix = new Array2DRowRealMatrix(localDictionary.size(), BiomedQA.DOCUMENTS_FOR_QE);
+		tdMatrix = new Array2DRowRealMatrix(localDictionary.size(), resultsList.size());
 
 		for(int docIndex=0; docIndex<resultsList.size(); docIndex++) {
 			HashMap<String,Integer> TermsFrequency = (HashMap<String,Integer>) documentTermFrequencies.get(docIndex);
