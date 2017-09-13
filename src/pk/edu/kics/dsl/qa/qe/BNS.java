@@ -42,7 +42,7 @@ public class BNS extends FeatureSelection {
 
 			// Fix for words not appearing in global dictionary - comma words
 			if(termFPR<0) {
-				termFPR = 0;
+				termFPR = 0.0005;
 			}
 			
 			double Ftpr = normalDistribution.inverseCumulativeProbability(termTPR);

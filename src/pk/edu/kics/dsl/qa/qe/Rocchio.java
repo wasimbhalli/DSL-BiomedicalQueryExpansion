@@ -20,7 +20,7 @@ public class Rocchio extends IdeRegular {
 		for(String key: localDictionary) {
 			double qTFIDF = 0, dTFIDF = 0;
 			if(questionTFIDFVector.containsKey(key)) qTFIDF = questionTFIDFVector.get(key);
-			if(relevantDocumentsTFIDFVector.containsKey(key)) dTFIDF = relevantDocumentsTFIDFVector.get(key) / BiomedQA.DOCUMENTS_FOR_QE;
+			if(relevantDocumentsTFIDFVector.containsKey(key)) dTFIDF = relevantDocumentsTFIDFVector.get(key);
 			termsScore.put(key, P * qTFIDF + M * dTFIDF);
 		}
 

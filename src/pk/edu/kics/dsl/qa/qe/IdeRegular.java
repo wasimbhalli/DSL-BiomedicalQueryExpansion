@@ -43,6 +43,11 @@ public class IdeRegular extends LocalQueryExpansion
 	public String getRelevantTerms(Question question, int termsToSelect) {
 		this.init(question);
 
+		for(String key:relevantDocumentsTFIDFVector.keySet()) {
+			double newTFIDF = relevantDocumentsTFIDFVector.get(key)*resultsList.size();
+			relevantDocumentsTFIDFVector.put(key, newTFIDF);
+		}
+		
 		for(String key: localDictionary) {
 			double qTFIDF = 0, dTFIDF = 0;
 			if(questionTFIDFVector.containsKey(key)) qTFIDF = questionTFIDFVector.get(key);

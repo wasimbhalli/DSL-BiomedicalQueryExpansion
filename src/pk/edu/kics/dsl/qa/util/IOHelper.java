@@ -3,6 +3,7 @@ package pk.edu.kics.dsl.qa.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -69,8 +70,31 @@ public class IOHelper {
 
 	}
 
+	public static ArrayList<String> getListFromTextFile(String path) {
+		ArrayList<String> linesList = new ArrayList<>();
+		BufferedReader br = null;
+		FileReader fr = null;
+		
+		try {
+			fr = new FileReader(new File(path));
+			br = new BufferedReader(fr);
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				linesList.add(line);
+			}
+
+			br.close();
+			fr.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return linesList;
+	}
+
 	public static void deletePreviousResults() {
 		File f = new File(docResult);
-        f.delete();
+		f.delete();
 	}
 }

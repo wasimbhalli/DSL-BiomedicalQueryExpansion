@@ -18,7 +18,7 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"WE"};
+	private final static String[] QE_TECHNIQUES = {"RSV"};
 	
 
 	//private final static String[] QE_TECHNIQUES = {"NQ"};
@@ -27,7 +27,7 @@ public class BiomedQA {
 
 	public final static int DOCUMENTS_FOR_QE = 10;
 	private final static int TOP_TERMS_TO_SELECT = 5;
-	public final static boolean DISPLAY_RESULTS = false;
+	public final static boolean DISPLAY_RESULTS = true;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
 	public final static String SOLR_SERVER = "localhost";
