@@ -30,8 +30,11 @@ public class OddsRatio extends FeatureSelection {
 			if(falsePositive.containsKey(key)) fp = falsePositive.get(key);
 			if(falseNegative.containsKey(key)) fn = falseNegative.get(key);
 
+			double denominator = fn * fp;
 			
-			double score = (tp * tn)/(fn * fp);
+			if(denominator == 0 ) denominator = 0.1;
+			
+			double score = (tp * tn)/denominator;
 			termsScore.put(key, score);
 		}
 
