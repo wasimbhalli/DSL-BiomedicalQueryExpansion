@@ -31,11 +31,15 @@ public class RSV extends LocalQueryExpansion {
 
 			if(termsTotalFrequency.containsKey(term)) {
 				termProbabilityinNonRelevant = (double) (termsTotalFrequency.get(term)-localTermsTotalFrequency.get(term))/(totalCorpusTermsFrquency-totalTermFrequency);
-			} else {
-				termProbabilityinNonRelevant = 0.000001;
+			}
+			
+			double denominator = 0.000001;
+			
+			if(termProbabilityinNonRelevant!=0 && termProbabilityinRelevant!= 0) {
+				denominator = (termProbabilityinNonRelevant*(1-termProbabilityinRelevant));
 			}
 
-			double score =  Math.log((termProbabilityinRelevant*(1-termProbabilityinNonRelevant))/(termProbabilityinNonRelevant*(1-termProbabilityinRelevant)));
+			double score =  Math.log((termProbabilityinRelevant*(1-termProbabilityinNonRelevant))/denominator);
 			termsScore.put(term, score * (termProbabilityinRelevant-termProbabilityinNonRelevant));
 
 		}
