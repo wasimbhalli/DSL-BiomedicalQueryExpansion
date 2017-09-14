@@ -35,7 +35,7 @@ public class RSV extends LocalQueryExpansion {
 			
 			double denominator = 0.000001;
 			
-			if(termProbabilityinNonRelevant!=0 && termProbabilityinRelevant!= 0) {
+			if(termProbabilityinNonRelevant!=0 && (1-termProbabilityinRelevant)!= 0) {
 				denominator = (termProbabilityinNonRelevant*(1-termProbabilityinRelevant));
 			}
 
