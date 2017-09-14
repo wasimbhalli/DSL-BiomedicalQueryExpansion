@@ -18,7 +18,7 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 public class BiomedQA {
 
 	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"RSV"};
+	private final static String[] QE_TECHNIQUES = {"IG"};
 	
 
 	//private final static String[] QE_TECHNIQUES = {"NQ"};

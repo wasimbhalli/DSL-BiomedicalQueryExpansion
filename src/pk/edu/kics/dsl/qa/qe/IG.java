@@ -21,20 +21,30 @@ public class IG extends FeatureSelection {
 
 		for(String key: localDictionary) {
 
-			int tp = 0;
-			int tn = 0;
-			int fp = 0;
-			int fn = 0;
+			double tp = 0;
+			double tn = 0;
+			double fp = 0;
+			double fn = 0;
 
 			if(truePositive.containsKey(key)) tp = truePositive.get(key);
 			if(trueNegative.containsKey(key)) tn = trueNegative.get(key);
 			if(falsePositive.containsKey(key)) fp = falsePositive.get(key);
 			if(falseNegative.containsKey(key)) fn = falseNegative.get(key);
-
-			double termProbability = tp + fp / BiomedQA.TOTAL_DOCUMENTS;
-			int nonRelevantDocuments = BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE;
 			
-			Double ig = getEntropy(BiomedQA.DOCUMENTS_FOR_QE, nonRelevantDocuments) - 
+			if(tp == 0) tp = 0.005;
+			if(fp == 0) fp = 0.005;
+			if(tn == 0) tn = 0.005;
+			if(fn == 0) fn = 0.005;
+			
+			if(tp == 1) tp = 0.99;
+			if(fp == 1) fp = 0.99;
+			if(tn == 1) tn = 0.99;
+			if(fn == 1) fn = 0.99;
+
+			double termProbability = (double) tp + fp / BiomedQA.TOTAL_DOCUMENTS;
+			int nonRelevantDocuments = BiomedQA.TOTAL_DOCUMENTS - resultsList.size();
+			
+			Double ig = getEntropy(resultsList.size(), nonRelevantDocuments) - 
 					(termProbability * getEntropy(tp, fp) + 
 							(1 - termProbability) * (getEntropy(tn, fn)));
 			
@@ -45,7 +55,7 @@ public class IG extends FeatureSelection {
 		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
 	}
 	
-	private double getEntropy(int X, double Y) {
+	private double getEntropy(double X, double Y) {
 		double e = -(X / (X + Y) * Math.log((X / (X + Y)))) - (Y / (X + Y) * Math.log((Y / (X + Y))));
 		return e;
 	}

@@ -41,9 +41,11 @@ public class BNS extends FeatureSelection {
 			if(falsePositiveRate.containsKey(key)) termFPR = falsePositiveRate.get(key);
 
 			// Fix for words not appearing in global dictionary - comma words
-			if(termFPR<0) {
-				termFPR = 0.0005;
-			}
+			if(termFPR<=0) termFPR = 0.0005;
+			if(termTPR<=0) termTPR = 0.0005;
+
+			if(termFPR == 1) termFPR = 0.99;
+			if(termTPR == 1) termTPR = 0.99;
 			
 			double Ftpr = normalDistribution.inverseCumulativeProbability(termTPR);
 			double Ffpr = normalDistribution.inverseCumulativeProbability(termFPR);
