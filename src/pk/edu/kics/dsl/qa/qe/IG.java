@@ -41,7 +41,7 @@ public class IG extends FeatureSelection {
 			if(tn == 1) tn = 0.99;
 			if(fn == 1) fn = 0.99;
 
-			double termProbability = (double) tp + fp / BiomedQA.TOTAL_DOCUMENTS;
+			double termProbability = (double) (tp + fp) / BiomedQA.TOTAL_DOCUMENTS;
 			int nonRelevantDocuments = BiomedQA.TOTAL_DOCUMENTS - resultsList.size();
 			
 			Double ig = getEntropy(resultsList.size(), nonRelevantDocuments) - 
