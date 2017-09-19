@@ -21,19 +21,21 @@ public class PRF extends LocalQueryExpansion
 
 		for(String term:localDictionary) 
 		{
+			double Pnr = 0.0000001;
+			int relevantDocuments = resultsList.size();
+			int localTermDf = localDocumentFrequency.get(term);
+			double Pr = (double) localTermDf/relevantDocuments;
 
-			double pNonRelated = 0;
-			double pRelated = (double) localDocumentFrequency.get(term)/BiomedQA.DOCUMENTS_FOR_QE;
-
-			if(termsTotalFrequency.containsKey(term)) {
-				pNonRelated = (double) (documentFrequency.get(term)-localDocumentFrequency.get(term))/(BiomedQA.TOTAL_DOCUMENTS-BiomedQA.DOCUMENTS_FOR_QE);
-			} else {
-				pNonRelated = 0.000001;
+			if(documentFrequency.containsKey(term)) {
+				int termDf = documentFrequency.get(term);
+				int totalNonRelevantDocuments = BiomedQA.TOTAL_DOCUMENTS- relevantDocuments;
+				double temp = (double) (termDf - localTermDf)/totalNonRelevantDocuments;
+				if(temp!=0) Pnr = temp;
 			}
 
-			termsScore.put(term, pRelated/pNonRelated);
+			termsScore.put(term, Pr/Pnr);
 		}
-		
+
 		Map<String,Double> sortedTermsScore = CollectionHelper.sortByComparator(termsScore, false); 
 		return CollectionHelper.getTopTerms(sortedTermsScore, termsToSelect);
 	}
