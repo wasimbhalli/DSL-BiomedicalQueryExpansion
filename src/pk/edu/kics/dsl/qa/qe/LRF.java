@@ -15,7 +15,7 @@ public class LRF extends LocalQueryExpansion
 	HashMap<String, Double> termsScore = new HashMap<>();
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -45,8 +45,7 @@ public class LRF extends LocalQueryExpansion
 			termsScore.put(key, score);
 		}
 
-		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 
 }

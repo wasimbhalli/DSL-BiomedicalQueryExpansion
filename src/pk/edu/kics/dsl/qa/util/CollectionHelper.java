@@ -45,7 +45,7 @@ public class CollectionHelper {
 		return sortedMap;
 	}
 
-	public static Map<String, Integer> sortByComparatorInt(Map<String, Integer> unsortMap, final boolean order)
+	public static Map<String, Double> sortByComparatorInt(Map<String, Integer> unsortMap, final boolean order)
 	{
 		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(unsortMap.entrySet());
 		Collections.sort(list, new Comparator<Entry<String, Integer>>()
@@ -66,10 +66,10 @@ public class CollectionHelper {
 		});
 
 		// Maintaining insertion order with the help of LinkedList
-		Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+		Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
 		for (Entry<String, Integer> entry : list)
 		{
-			sortedMap.put(entry.getKey(), entry.getValue());
+			sortedMap.put(entry.getKey(), (double) entry.getValue());
 		}
 
 		return sortedMap;

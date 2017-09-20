@@ -12,7 +12,7 @@ public class KLDivergence extends LocalQueryExpansion {
 	HashMap<String, Double> termsScore = new HashMap<>();
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -42,8 +42,6 @@ public class KLDivergence extends LocalQueryExpansion {
 		}
 
 
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
-
 }

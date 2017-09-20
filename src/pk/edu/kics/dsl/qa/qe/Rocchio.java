@@ -14,7 +14,7 @@ public class Rocchio extends IdeRegular {
 	private final int M = 2;
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		super.init(question);
 
 		for(String key: localDictionary) {
@@ -24,7 +24,6 @@ public class Rocchio extends IdeRegular {
 			termsScore.put(key, P * qTFIDF + M * dTFIDF);
 		}
 
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 }

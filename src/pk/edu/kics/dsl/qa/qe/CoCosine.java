@@ -14,7 +14,7 @@ public class CoCosine extends Cooccurrence {
 	HashMap<String, HashMap<String, Double>> cosine = new HashMap<>();
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String,Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -44,8 +44,7 @@ public class CoCosine extends Cooccurrence {
 			e.printStackTrace();
 		}
 
-		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 
 	private void calculateCosine(String questionKey, String dictionaryKey, int Cij) {
@@ -54,15 +53,19 @@ public class CoCosine extends Cooccurrence {
 		if(localDocumentFrequency.containsKey(questionKey)) Ci = localDocumentFrequency.get(questionKey);
 		if(localDocumentFrequency.containsKey(dictionaryKey)) Cj = localDocumentFrequency.get(dictionaryKey); 
 
-		double diceValue = (double) Cij / Math.sqrt(Ci * Cj);
+		double denominator = Math.sqrt(Ci * Cj);
+		
+		if(denominator == 0) denominator = 0.00001;
+		
+		double cosineValue = (double) Cij / denominator;
 
 		HashMap<String, Double> inner = cosine.get(questionKey);
 
 		if(inner == null){
 			inner = new HashMap<String, Double>();
-			inner.put(dictionaryKey, diceValue);
+			inner.put(dictionaryKey, cosineValue);
 		}
-		inner.put(dictionaryKey, diceValue);
+		inner.put(dictionaryKey, cosineValue);
 
 		cosine.put(questionKey, inner);
 	}

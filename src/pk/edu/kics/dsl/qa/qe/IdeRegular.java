@@ -40,7 +40,7 @@ public class IdeRegular extends LocalQueryExpansion
 	}
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		this.init(question);
 
 		for(String key:relevantDocumentsTFIDFVector.keySet()) {
@@ -55,7 +55,6 @@ public class IdeRegular extends LocalQueryExpansion
 			termsScore.put(key, qTFIDF + dTFIDF);
 		}
 
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 }

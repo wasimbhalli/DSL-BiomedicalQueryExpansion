@@ -13,7 +13,7 @@ public class CoJaccard extends Cooccurrence {
 	HashMap<String, HashMap<String, Double>> jaccard = new HashMap<>();
 	
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -43,8 +43,7 @@ public class CoJaccard extends Cooccurrence {
 			e.printStackTrace();
 		}
 
-		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 
 	private void calculateJaccard(String questionKey, String dictionaryKey, int Cij) {
@@ -53,7 +52,10 @@ public class CoJaccard extends Cooccurrence {
 		if(localDocumentFrequency.containsKey(questionKey)) Ci = localDocumentFrequency.get(questionKey);
 		if(localDocumentFrequency.containsKey(dictionaryKey)) Cj = localDocumentFrequency.get(dictionaryKey); 
 
-		double jaccardVal = (double) Cij / (Ci + Cj - Cij);
+		double denominator = Ci + Cj - Cij;
+		if(denominator == 0) denominator = 0.00001;
+		
+		double jaccardVal = (double) Cij / denominator;
 
 		HashMap<String, Double> inner = jaccard.get(questionKey);
 		

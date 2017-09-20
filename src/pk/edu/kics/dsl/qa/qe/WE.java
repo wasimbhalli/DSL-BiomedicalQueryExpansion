@@ -18,7 +18,7 @@ public class WE extends LocalQueryExpansion {
 	private static ArrayList<String> commonWords = IOHelper.getListFromTextFile("data/3000-common-english-words.txt");
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -58,8 +58,7 @@ public class WE extends LocalQueryExpansion {
 			System.out.println("Done with term: " + key + " (" + score + ")");
 		}
 
-		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 
 	private double getTermsScore(String term1, String term2) {

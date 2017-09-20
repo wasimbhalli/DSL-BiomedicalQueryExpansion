@@ -67,7 +67,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 	}
 	
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		return null;
 	}
 	

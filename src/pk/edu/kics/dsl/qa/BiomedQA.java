@@ -2,6 +2,7 @@ package pk.edu.kics.dsl.qa;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.json.JSONException;
@@ -9,7 +10,9 @@ import org.json.simple.parser.ParseException;
 
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
-import pk.edu.kics.dsl.qa.qe.*;
+import pk.edu.kics.dsl.qa.qe.QueryExpansion;
+import pk.edu.kics.dsl.qa.util.CollectionHelper;
+import pk.edu.kics.dsl.qa.util.CombHelper;
 import pk.edu.kics.dsl.qa.util.Evaluation;
 import pk.edu.kics.dsl.qa.util.IOHelper;
 import pk.edu.kics.dsl.qa.util.SolrHelper;
@@ -17,18 +20,28 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 
 public class BiomedQA {
 
-	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"IG"};
-	
+	private enum Combination {
+		Intersection, 
+		Broda, 
+		Linear // Only two techniques will be used for this combination
+	};
 
-	//private final static String[] QE_TECHNIQUES = {"NQ"};
+	private final static Boolean isCombination = true;
+	private final static Combination combinationTechnique = Combination.Linear;
+	private final static double linearAlpha = 0.6;
+	
+	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
+	private final static String[] QE_TECHNIQUES = {"MFT", "LRF"};
+
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	//private final static String IR_MODEL = ""; 
 
 	public final static int DOCUMENTS_FOR_QE = 10;
-	private final static int TOP_TERMS_TO_SELECT = 5;
+	private final static int TOP_TERMS_TO_SELECT = 10;
 	public final static boolean DISPLAY_RESULTS = true;
 
+	public final static boolean STEMMING_ENABLED = false;
+	
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
 	public final static String SOLR_SERVER = "localhost";
 	public final static String SOLR_CORE = "genomic_html";
@@ -39,16 +52,25 @@ public class BiomedQA {
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
 
 		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
-		
+
 		try {
 			String experiment = "";
-			
-			for (int i = 0; i < QE_TECHNIQUES.length; i++) {
-				experiment = QE_TECHNIQUES[i];// + "-" + IR_MODEL;
-				IOHelper.deletePreviousResults();
-				processAllQuestions(questionsList, QE_TECHNIQUES[i]);
-				Evaluation.evaluateResults(experiment);
 
+			if(!isCombination) {
+				for (int i = 0; i < QE_TECHNIQUES.length; i++) {
+					experiment = QE_TECHNIQUES[i];// + "-" + IR_MODEL;
+					IOHelper.deletePreviousResults();
+					processAllQuestions(questionsList, QE_TECHNIQUES[i]);
+					Evaluation.evaluateResults(experiment);
+					
+					System.out.println("Done: " + experiment);
+				}
+			} else {
+				experiment = combinationTechnique.toString() + "-" + String.join(",", QE_TECHNIQUES);;
+				IOHelper.deletePreviousResults();
+				processAllQuestions(questionsList, null);
+				Evaluation.evaluateResults(experiment);
+				
 				System.out.println("Done: " + experiment);
 			}
 
@@ -64,20 +86,49 @@ public class BiomedQA {
 			processQuestion(question, qeTechnique, counter++);
 		}
 	}
-	
+
 	private static void processQuestion(Question question, String qeTechnique, int counter) throws Exception {
-		
+
 		SolrHelper solrHelper = new SolrHelper();
 		Question processedQ = new Question();
 		String relevantTerms = "";
 		String queryWords = question.getQuestion();
-		
-		if(!qeTechnique.toLowerCase().equals("nq")) {
-			String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
-			QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-			relevantTerms = qe.getRelevantTerms(question, TOP_TERMS_TO_SELECT);
-			queryWords = qe.mergeTerms(queryWords, relevantTerms);
+
+		if(!isCombination) {
+			if(!qeTechnique.toLowerCase().equals("nq")) {
+				String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
+				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(question);
+				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				queryWords = StringHelper.mergeTerms(queryWords, relevantTerms);
+			}	
+		} else {
+			ArrayList<String> terms = new ArrayList<>();
+			ArrayList<Map<String, Double>> lists = new ArrayList<>();
+			
+			for (int i = 0; i < QE_TECHNIQUES.length; i++) {
+				String technique = QE_TECHNIQUES[i];
+				String qeClass = "pk.edu.kics.dsl.qa.qe." + technique;
+				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(question);
+				lists.add(sortedTerms);
+				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				terms.add(relevantTerms);
+			}
+			
+			if(combinationTechnique == Combination.Intersection) {
+				relevantTerms = CombHelper.intersect(terms);
+			} else if(combinationTechnique == Combination.Linear) {
+				Map<String, Double> sortedTerms = CombHelper.linear(lists, linearAlpha);
+				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+			} else if(combinationTechnique == Combination.Broda) {
+				Map<String, Double> sortedTerms = CombHelper.borda(terms);
+				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+			}
+			
+			queryWords = StringHelper.mergeTerms(queryWords, relevantTerms);
 		}
+		
 
 		ArrayList<String> finalQuery = StringHelper.solrPreprocessor(queryWords);
 
@@ -88,6 +139,6 @@ public class BiomedQA {
 		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(processedQ, 0, 650);
 		IOHelper.writeResult(resultsList, counter);
 	}
-	
-	
+
+
 }

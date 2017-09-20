@@ -10,7 +10,7 @@ import pk.edu.kics.dsl.qa.util.QEHelper;
 public class TFIDF extends LocalQueryExpansion {
 	
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -19,7 +19,6 @@ public class TFIDF extends LocalQueryExpansion {
 		
 		HashMap<String, Double> termsTFIDF = QEHelper.getTermsTFIDF(localDictionary, documentFrequency, documentTermFrequencies);
 		
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsTFIDF, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		return CollectionHelper.sortByComparator(termsTFIDF, false);
 	}
 }

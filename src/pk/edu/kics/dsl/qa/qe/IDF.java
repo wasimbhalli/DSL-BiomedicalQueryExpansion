@@ -23,7 +23,7 @@ public class IDF extends LocalQueryExpansion {
 	HashMap<String, Double> termsIDF = new HashMap<>();
 	
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -40,8 +40,7 @@ public class IDF extends LocalQueryExpansion {
 			termsIDF.put(key, Math.log(BiomedQA.TOTAL_DOCUMENTS/docFrequency));
 		}
 		
-		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsIDF, false);
-		return CollectionHelper.getTopTerms(sortedTermsTFIDF, termsToSelect);
+		return CollectionHelper.sortByComparator(termsIDF, false);
 	}
 	
 }

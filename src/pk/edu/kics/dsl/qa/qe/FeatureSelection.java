@@ -1,6 +1,7 @@
 package pk.edu.kics.dsl.qa.qe;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
@@ -66,7 +67,7 @@ public class FeatureSelection extends LocalQueryExpansion {
 
 	// Override method in child class for implementation of scoring
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		return null;
 	}
 

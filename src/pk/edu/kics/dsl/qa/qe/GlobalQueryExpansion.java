@@ -17,7 +17,7 @@ import pk.edu.kics.dsl.qa.util.MetaMapResults;
 public class GlobalQueryExpansion extends QueryExpansion {
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public HashMap<String, Double> getRelevantTerms(Question question) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -74,8 +74,5 @@ public class GlobalQueryExpansion extends QueryExpansion {
 			}
 		}
 		return finalSynonymsList;
-
-
-
 	}
 }

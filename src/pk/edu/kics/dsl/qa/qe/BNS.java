@@ -16,7 +16,7 @@ public class BNS extends FeatureSelection {
 	HashMap<String, Double> termsScore = new HashMap<>();
 
 	@Override
-	public String getRelevantTerms(Question question, int termsToSelect) {
+	public Map<String, Double> getRelevantTerms(Question question) {
 		try {
 			super.init(question);
 		} catch (Exception e) {
@@ -30,7 +30,6 @@ public class BNS extends FeatureSelection {
 		for (String key : falsePositive.keySet()) {
 			falsePositiveRate.put(key, (double) falsePositive.get(key)/(BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE));
 		}
-
 
 		for(String key: localDictionary) {
 
@@ -54,7 +53,6 @@ public class BNS extends FeatureSelection {
 			termsScore.put(key, score);
 		}
 
-		Map<String, Double> sortedTerms = CollectionHelper.sortByComparator(termsScore, false);
-		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
+		return CollectionHelper.sortByComparator(termsScore, false);
 	}
 }

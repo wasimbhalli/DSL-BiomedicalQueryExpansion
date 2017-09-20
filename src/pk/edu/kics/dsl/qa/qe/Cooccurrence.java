@@ -63,7 +63,7 @@ public class Cooccurrence extends LocalQueryExpansion {
 	
 	protected void calculateCoDegree(String questionKey, String dictionaryKey, double coQiC) {
 		
-		int docFrequency = 0;
+		int docFrequency = BiomedQA.TOTAL_DOCUMENTS;
 		if(documentFrequency.containsKey(dictionaryKey)) docFrequency = documentFrequency.get(dictionaryKey);
 		
 		double idf = Math.log((double)BiomedQA.TOTAL_DOCUMENTS/docFrequency);

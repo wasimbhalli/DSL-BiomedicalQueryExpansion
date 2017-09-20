@@ -25,6 +25,7 @@ import org.apache.lucene.util.AttributeFactory;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import pk.edu.kics.dsl.qa.BiomedQA;
 
 public class StringHelper {
 
@@ -47,16 +48,16 @@ public class StringHelper {
 	public static ArrayList<String> stringTokenizer(String content){
 		StringTokenizer tokenizer = new StringTokenizer(content," ><@^%$!1}+-$&%*(/)0123456789#\t\n\r\f,.:;?![]'");
 		ArrayList<String> contentWords = new ArrayList<String>();
-		
+
 		while (tokenizer.hasMoreTokens()) {
 			String word = tokenizer.nextToken().toLowerCase().trim();
 			if(!stopWords.contains(new String(word)))
 				contentWords.add(word);
- 		}
-		
+		}
+
 		return contentWords;
-    }
-	
+	}
+
 	public static String[] openNLPTokenizer(String content) throws FileNotFoundException {
 
 		File initialFile = new File("data/opennlp-models/en-token.bin");
@@ -97,8 +98,10 @@ public class StringHelper {
 		LowerCaseFilterFactory lowerCaseFactory = new LowerCaseFilterFactory(param);
 		TokenStream tokenStream = lowerCaseFactory.create(tokenizer);
 
-		/*KStemFilterFactory kstemFilterFactory = new KStemFilterFactory(param);
-		tokenStream = kstemFilterFactory.create(tokenStream);*/
+		if(BiomedQA.STEMMING_ENABLED) {
+			KStemFilterFactory kstemFilterFactory = new KStemFilterFactory(param);
+			tokenStream = kstemFilterFactory.create(tokenStream);
+		}
 
 		CharArraySet stopWords = EnglishAnalyzer.getDefaultStopSet();
 		tokenStream = new StopFilter(tokenStream, stopWords);
@@ -128,7 +131,7 @@ public class StringHelper {
 	public static String getTermsByComma(ArrayList<String> terms) {
 		return String.join(",", terms);
 	}
-	
+
 	public static String normalizeWord(String word) {
 		return word.replace(",", "");
 		/*return word.replaceAll(",", "").replaceAll("\"", "").replaceAll("\\{", "").
@@ -140,4 +143,9 @@ public class StringHelper {
 				replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "").
 				replaceAll(":", "");
 	}
+
+	public static String mergeTerms(String actualTerms, String newTerms) {
+		return actualTerms + " " + StringHelper.removeSOLRSymbols(newTerms);
+	}
+
 }
