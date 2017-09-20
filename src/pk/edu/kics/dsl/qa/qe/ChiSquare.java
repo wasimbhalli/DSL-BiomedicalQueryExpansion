@@ -44,6 +44,7 @@ public class ChiSquare extends FeatureSelection {
 	}
 	
 	private double t(int count, double expected) {
+		if(expected == 0) return 0;
 		return Math.pow(count - expected, 2)/expected;
 	}
 	
