@@ -27,10 +27,10 @@ public class Bose extends LocalQueryExpansion
 			double Pn = 0.0001;
 			
 			if(termsTotalFrequency.containsKey(key)) {
-				Pn = termsTotalFrequency.get(key)/BiomedQA.TOTAL_DOCUMENTS;
+				Pn = (double)termsTotalFrequency.get(key)/BiomedQA.TOTAL_DOCUMENTS;
 			}
 			
-			double score = tfx * log((1+Pn)/Pn, 2) + Math.log(1 + Pn);
+			double score = (tfx * Math.log((1+Pn)/Pn)) + Math.log(1 + Pn);
 			termsScore.put(key, score);
 		}
 
@@ -38,8 +38,4 @@ public class Bose extends LocalQueryExpansion
 		return CollectionHelper.getTopTerms(sortedTerms, termsToSelect);
 	}
 
-	private int log(double x, int base)
-	{
-		return (int) (Math.log(x) / Math.log(base));
-	}
 }
