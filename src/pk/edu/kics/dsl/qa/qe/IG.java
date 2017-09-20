@@ -48,7 +48,10 @@ public class IG extends FeatureSelection {
 					(termProbability * getEntropy(tp, fp) + 
 							(1 - termProbability) * (getEntropy(tn, fn)));
 			
-			termsScore.put(key, ig);
+			if (Double.isNaN(ig)) ig = 0.0;
+			
+			// Multiplied to visualize scores
+			termsScore.put(key, ig * 10000);
 		}
 
 		Map<String, Double> sortedTermsTFIDF = CollectionHelper.sortByComparator(termsScore, false);

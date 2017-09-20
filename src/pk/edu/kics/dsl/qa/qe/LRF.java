@@ -36,9 +36,11 @@ public class LRF extends LocalQueryExpansion
 				int TF = 0;
 				if(doc.containsKey(key)) TF = doc.get(key);
 				int totalTF = documentTotalTerms.get(i);
-				double PtGivenMr = lambda * (TF / totalTF) + (1 - lambda) * Ptg;
+				double PtGivenMr = lambda * ((double)TF / totalTF) + (1 - lambda) * Ptg;
 				score += Math.log(PtGivenMr/Ptg);
 			}
+			
+			if(Double.isNaN(score)) score = 0;
 			
 			termsScore.put(key, score);
 		}
