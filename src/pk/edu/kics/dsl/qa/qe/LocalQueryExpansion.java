@@ -27,6 +27,8 @@ public class LocalQueryExpansion extends QueryExpansion{
 	protected HashMap<String, Integer> localTermsTotalFrequency = new HashMap<>();
 	protected HashMap<String, Integer> termsTotalFrequency = new HashMap<>();
 	
+	protected HashMap<Integer, Integer> documentTotalTerms = new HashMap<>();
+	
 	// True Positive: Number of local documents in which term is present. False Negative: In which term is absent
 	protected HashMap<String, Integer> localDocumentFrequency = new HashMap<>();
 	
@@ -89,7 +91,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 			SolrResult result = resultsList.get(docCounter);
 			ArrayList<String> tokens = StringHelper.analyzeContent(result.getContent(), false);
 			documentTermFrequencies.put(docCounter, StringHelper.getWordsFrequency(tokens));
-
+			documentTotalTerms.put(docCounter, tokens.size());
 			for (int i = 0; i < tokens.size(); i++) {
 				String currentTerm = StringHelper.normalizeWord(tokens.get(i));
 				if(!localDictionary.contains(currentTerm)) {
