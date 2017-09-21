@@ -95,7 +95,7 @@ public class BiomedQA {
 	private static void processAllQuestions(ArrayList<Question> questionsList, String qeTechnique) throws Exception {
 		int counter = 1;
 		for (Question question : questionsList) {
-			processQuestion(question, qeTechnique, counter++);break;
+			processQuestion(question, qeTechnique, counter++);
 		}
 	}
 
