@@ -1,6 +1,5 @@
 package pk.edu.kics.dsl.qa.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -96,6 +95,21 @@ public class CollectionHelper {
 		}
 
 		return sb.toString();
+	}
+	
+	public static Map<String, Double> normalizeScore(Map<String, Double> deNormalizedMap)
+	{
+		Map<String, Double> normalizedMap = new LinkedHashMap<String, Double>();
+		double highest_score = 0.0;
+
+		Map.Entry<String,Double> firstEntry = deNormalizedMap.entrySet().iterator().next();
+		highest_score = firstEntry.getValue();
+		
+		for (Map.Entry<String, Double> entry : deNormalizedMap.entrySet()) {
+			normalizedMap.put(entry.getKey(), entry.getValue()/highest_score);
+		}
+		
+		return normalizedMap;
 	}
 
 }
