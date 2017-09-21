@@ -37,7 +37,7 @@ public class IDF extends LocalQueryExpansion {
 				docFrequency = documentFrequency.get(key);
 			}
 			
-			termsIDF.put(key, Math.log(BiomedQA.TOTAL_DOCUMENTS/docFrequency));
+			termsIDF.put(key, Math.log((double)BiomedQA.TOTAL_DOCUMENTS/docFrequency));
 		}
 		
 		return CollectionHelper.sortByComparator(termsIDF, false);
