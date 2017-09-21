@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pk.edu.kics.dsl.qa.BiomedQA;
+
 public class CombHelper {
 
 	public static String intersect(ArrayList<String> termLists) {
@@ -51,7 +53,7 @@ public class CombHelper {
 		
 		for(String key:finalTermsList) {
 			int score = 0;
-			final int MAX_LIST_SIZE = 1000;
+			final int MAX_LIST_SIZE = BiomedQA.TOP_TERMS_TO_SELECT;
 			
 			for(List<String> list: allLists) {
 				if(list.contains(key)) score += MAX_LIST_SIZE - list.indexOf(key);
@@ -71,21 +73,8 @@ public class CombHelper {
 		Map<String, Double> termList2 = termLists.get(1);
 
 		// normalize both lists - assuming that the first element is has the highest score
-		Map.Entry<String,Double> firstEntry = termList1.entrySet().iterator().next();
-		Double highest_score = firstEntry.getValue();
-
-		for (Map.Entry<String, Double> entry : termList1.entrySet()) {
-			termList1.put(entry.getKey(), entry.getValue()/highest_score);
-		}
-
-		// do the same for second list
-		highest_score = 0.0;
-		firstEntry = termList2.entrySet().iterator().next();
-		highest_score = firstEntry.getValue();
-
-		for (Map.Entry<String, Double> entry : termList2.entrySet()) {
-			termList2.put(entry.getKey(), entry.getValue()/highest_score);
-		}
+		termList1 = CollectionHelper.normalizeScore(termList1);
+		termList2 = CollectionHelper.normalizeScore(termList2);
 
 		// now combine scores using linear combination
 		Map<String, Double> finalList = new HashMap<String, Double>();
