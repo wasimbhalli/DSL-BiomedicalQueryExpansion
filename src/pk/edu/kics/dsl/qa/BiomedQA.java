@@ -37,21 +37,21 @@ public class BiomedQA {
 	private final static Combination COMBINATION_TECHNIQUE = Combination.Borda;
 	private final static double LINEAR_ALPHA = 0.6;
 
-	// If no technique is to be used, use "NQ" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"MFT"};
+	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
+	private final static String[] QE_TECHNIQUES = {"Baseline"};
 
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	//private final static String IR_MODEL = ""; 
 
-	public final static int DOCUMENTS_FOR_QE = 5;
-	public final static int TOP_TERMS_TO_SELECT = 5;
+	public final static int DOCUMENTS_FOR_QE = 10;
+	public final static int TOP_TERMS_TO_SELECT = 10;
 	public final static boolean DISPLAY_RESULTS = true;
 
 	public final static boolean STEMMING_ENABLED = false;
 
 	// only applicable for individual feature selection technique - not for combinations
 	public final static SemanticSource SEMANTIC_SOURCE_TECHNIQUE = SemanticSource.MeSH;
-	public final static boolean SEMANTIC_FILTERING_ENABLED = true;
+	public final static boolean SEMANTIC_FILTERING_ENABLED = false;
 	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 10;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
@@ -107,7 +107,7 @@ public class BiomedQA {
 		String queryWords = question.getQuestion();
 
 		if(!COMBINATION_ENABLED) {
-			if(!qeTechnique.toLowerCase().equals("nq")) {
+			if(!qeTechnique.toLowerCase().equals("baseline")) {
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
 				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
 				Map<String, Double> sortedTerms = qe.getRelevantTerms(question);
