@@ -38,13 +38,13 @@ public class BiomedQA {
 	private final static double LINEAR_ALPHA = 0.6;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"Baseline"};
+	private final static String[] QE_TECHNIQUES = {"ACC2","BNS", "Bose","ChiSquare","CoCosine","CoDice","CoJaccard","IdeRegular","IDF","IG","KLDivergence","LRF","MFT","OddsRatio","PRF","Rocchio","RSV","TFIDF"};
 
 	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
 	//private final static String IR_MODEL = ""; 
 
 	public final static int DOCUMENTS_FOR_QE = 10;
-	public final static int TOP_TERMS_TO_SELECT = 10;
+	public final static int TOP_TERMS_TO_SELECT = 20;
 	public final static boolean DISPLAY_RESULTS = true;
 
 	public final static boolean STEMMING_ENABLED = false;

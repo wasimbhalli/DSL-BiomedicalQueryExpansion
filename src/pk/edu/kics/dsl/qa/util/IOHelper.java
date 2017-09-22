@@ -31,8 +31,10 @@ public class IOHelper {
 			questionEntity.topicId = Integer.parseInt(sCurrentLine.substring(1, sCurrentLine.indexOf(">")));
 			questionEntity.MeSHAspects = sCurrentLine.substring(sCurrentLine.indexOf("[") + 1,
 					sCurrentLine.indexOf("]"));
-			questionEntity.text = sCurrentLine.substring(sCurrentLine.indexOf(">") + 1, sCurrentLine.indexOf("["))
-					+ sCurrentLine.substring(sCurrentLine.indexOf("]") + 1, sCurrentLine.indexOf("?"));
+			questionEntity.text = 
+					sCurrentLine.substring(sCurrentLine.indexOf(">") + 1, sCurrentLine.indexOf("[")) +
+					questionEntity.MeSHAspects.toLowerCase() + 
+					sCurrentLine.substring(sCurrentLine.indexOf("]") + 1, sCurrentLine.indexOf("?"));
 			questionList.add(questionEntity);
 		}
 
