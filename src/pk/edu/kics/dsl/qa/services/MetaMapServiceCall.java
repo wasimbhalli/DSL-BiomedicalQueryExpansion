@@ -37,7 +37,7 @@ public class MetaMapServiceCall {
 		}        
         metaMapServiceObject.setField("KSOURCE", "1516");
         // Optional field, program will run default MetaMap if not specified
-        metaMapServiceObject.setField("COMMAND_ARGS", "--JSONf 2 -V USAbase");
+        metaMapServiceObject.setField("COMMAND_ARGS", "-Ava --JSONf 2 -V USAbase");
         
         // Submit the job request
         try

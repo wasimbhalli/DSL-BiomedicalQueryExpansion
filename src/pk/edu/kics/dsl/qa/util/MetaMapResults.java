@@ -6,12 +6,18 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.google.common.collect.ArrayListMultimap;
 
 import pk.edu.kics.dsl.qa.entity.MetaMapCandidate;
 
@@ -96,7 +102,7 @@ public class MetaMapResults {
 				}
 			}
 		}
-		
+
 		candidate.setResource_id(resource_id);
 		candidate.setPrefered_name(prefered_name);
 		candidate.setSemantic_type(semantic_type);
@@ -156,17 +162,106 @@ public class MetaMapResults {
 	{
 		ArrayList<String> questionCui =new ArrayList<>();
 		for (Entry<String, Object> entry : metaMapResults.entrySet()) {
-			//String key = entry.getKey();
-			//System.out.println(key);
-			//System.out.println(((MetaMapCandidate) entry.getValue()).getPrefered_name().size());
 			for (String cui : ((MetaMapCandidate) entry.getValue()).getCandidateCUI()) 
 			{
 				questionCui.add(cui);
-				
 			}
-			//questionCui.add((String) entry.getValue());
-			
 		}	
+
 		return questionCui;
+	}
+
+	public static LinkedHashMap<String, List<String>> ParseMetamapVariantsReponse(String Jsonstr) {
+
+		Matcher match1=Pattern.compile("\\bAllDocuments\\b").matcher(Jsonstr);
+		Matcher match2=Pattern.compile("\\bDocument\\b").matcher(Jsonstr);
+
+		if(match1.find())
+		{
+			String []getSynList=Jsonstr.split("\\bAllDocuments\\b");
+			Jsonstr=getSynList[1];
+		}
+		if(match2.find())
+		{
+			String []getSynList=Jsonstr.split("\\bDocument\\b");
+			Jsonstr=getSynList[0];
+		}
+
+		return getSynRomGene(Jsonstr);
+	}
+
+	public static LinkedHashMap<String, List<String>> getSynRomGene(String output) {
+		ArrayList<Integer>variantList=new ArrayList<Integer>();
+		ArrayList<String>importantWords=new ArrayList<String>();
+		ArrayList<String>variantCountForTerm=new ArrayList<String>();
+		ArrayList<String> finalResult=new ArrayList<String>();
+
+		ArrayList<String> resultLines = new ArrayList<String>();
+		LinkedHashMap<String, List<String>> map=new LinkedHashMap<String, List<String>>();
+
+		String[] lines = output.split(System.getProperty("line.separator"));
+
+		try {
+			for (int j = 0; j < lines.length; j++) {
+				int k = j;
+				if (lines[k].contains("variants"))
+				{   
+					variantCountForTerm.add(lines[k]);
+					while (!(lines[k + 1].contains("variants"))) {
+						String line = lines[k + 1];
+						resultLines.add(line);
+						k++;
+					}
+				}
+			}
+		} catch (Exception n)  
+		{
+			n.getMessage();
+		}
+
+		for(int i=0;i<resultLines.size();i++)
+		{  
+			try 
+			{	if(!resultLines.get(i).equals("")) {
+				String str = resultLines.get(i).substring(resultLines.get(i).indexOf(' '), resultLines.get(i).indexOf('{')).trim();
+				finalResult.add(str);
+			}
+			}catch (Exception e) {
+				System.out.println("");
+			}
+
+		}
+
+		for(int i=0;i<variantCountForTerm.size();i++)
+		{   String countString=variantCountForTerm.get(i).substring(variantCountForTerm.get(i).indexOf('='),variantCountForTerm.get(i).indexOf(')'));
+
+		int num=0;
+		StringBuilder st=new StringBuilder();
+
+		for(int ii=1;ii<countString.length();ii++)
+		{    st.append(String.valueOf(countString.charAt(ii)));  //Character.digit(countString.charAt(1), 1000);
+
+		}
+		num=Integer.parseInt(st.toString());
+		variantList.add(num);
+
+		String impWord=variantCountForTerm.get(i).substring(0,variantCountForTerm.get(i).indexOf('['));
+		importantWords.add(impWord);
+		}
+
+		int k=0;
+		for(int j=0;j<importantWords.size();j++)
+		{	
+			List<String>temp= new ArrayList<String>();	    
+			for(int i=0;i<variantList.get(j);i++)
+			{	      
+				temp.add(finalResult.get(k));
+
+				k++;			    
+			} 	    
+			map.put(importantWords.get(j), temp);
+		}
+
+		return map;
 	}
 }

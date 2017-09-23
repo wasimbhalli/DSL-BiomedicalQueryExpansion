@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
 
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
+import pk.edu.kics.dsl.qa.qe.GlobalQueryExpansion;
 import pk.edu.kics.dsl.qa.qe.QueryExpansion;
 import pk.edu.kics.dsl.qa.util.CollectionHelper;
 import pk.edu.kics.dsl.qa.util.CombHelper;
@@ -33,26 +34,24 @@ public class BiomedQA {
 		WordEmbedding
 	};
 
-	private final static Boolean COMBINATION_ENABLED = false;
-	private final static Combination COMBINATION_TECHNIQUE = Combination.Borda;
-	private final static double LINEAR_ALPHA = 0.6;
+	private final static Boolean COMBINATION_ENABLED = true;
+	private final static Combination COMBINATION_TECHNIQUE = Combination.Linear;
+	private final static double LINEAR_ALPHA = 0.55;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"ACC2","BNS", "Bose","ChiSquare","CoCosine","CoDice","CoJaccard","IdeRegular","IDF","IG","KLDivergence","LRF","MFT","OddsRatio","PRF","Rocchio","RSV","TFIDF"};
-
-	// IR_MODEL also needs to be changed in core's managed-scheme file to work.
-	//private final static String IR_MODEL = ""; 
-
-	public final static int DOCUMENTS_FOR_QE = 10;
-	public final static int TOP_TERMS_TO_SELECT = 20;
-	public final static boolean DISPLAY_RESULTS = true;
+	private final static String[] QE_TECHNIQUES = {"BNS", "ChiSquare"};
+	public final static int DOCUMENTS_FOR_QE = 40;
+	public final static int TOP_TERMS_TO_SELECT = 35;
+	public final static boolean DISPLAY_RESULTS = false;
 
 	public final static boolean STEMMING_ENABLED = false;
+	
+	public final static boolean GLOBAL_QE_ENABLED = true;
 
 	// only applicable for individual feature selection technique - not for combinations
 	public final static SemanticSource SEMANTIC_SOURCE_TECHNIQUE = SemanticSource.MeSH;
 	public final static boolean SEMANTIC_FILTERING_ENABLED = false;
-	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 10;
+	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 5;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
 	public final static String SOLR_SERVER = "localhost";
@@ -70,7 +69,7 @@ public class BiomedQA {
 
 			if(!COMBINATION_ENABLED) {
 				for (int i = 0; i < QE_TECHNIQUES.length; i++) {
-					experiment = QE_TECHNIQUES[i];// + "-" + IR_MODEL;
+					experiment = QE_TECHNIQUES[i];
 					IOHelper.deletePreviousResults();
 					processAllQuestions(questionsList, QE_TECHNIQUES[i]);
 					Evaluation.evaluateResults(experiment);
@@ -78,7 +77,11 @@ public class BiomedQA {
 					System.out.println("Done: " + experiment);
 				}
 			} else {
-				experiment = COMBINATION_TECHNIQUE.toString() + "-" + String.join(",", QE_TECHNIQUES);;
+				
+				experiment = COMBINATION_TECHNIQUE.toString() + "-" + String.join("+", QE_TECHNIQUES);;
+				
+				if(COMBINATION_TECHNIQUE == Combination.Linear) experiment += " (" + LINEAR_ALPHA + ")";
+				
 				IOHelper.deletePreviousResults();
 				processAllQuestions(questionsList, null);
 				Evaluation.evaluateResults(experiment);
@@ -106,6 +109,10 @@ public class BiomedQA {
 		String relevantTerms = "";
 		String queryWords = question.getQuestion();
 
+		if(GLOBAL_QE_ENABLED) {
+			queryWords = GlobalQueryExpansion.getTranslatedQuery(queryWords);
+		}
+		
 		if(!COMBINATION_ENABLED) {
 			if(!qeTechnique.toLowerCase().equals("baseline")) {
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
@@ -150,7 +157,10 @@ public class BiomedQA {
 			queryWords = StringHelper.mergeTerms(queryWords, relevantTerms);
 		}
 
-
+		if(DISPLAY_RESULTS) {
+			System.out.println("Final Query: " + queryWords);
+		}
+		
 		ArrayList<String> finalQuery = StringHelper.solrPreprocessor(queryWords);
 
 		processedQ.setTopicId(question.topicId);
