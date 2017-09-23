@@ -36,7 +36,7 @@ public class BiomedQA {
 
 	private final static Boolean COMBINATION_ENABLED = true;
 	private final static Combination COMBINATION_TECHNIQUE = Combination.Linear;
-	private final static double LINEAR_ALPHA = 0.55;
+	private final static double LINEAR_ALPHA = 0.6;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
 	private final static String[] QE_TECHNIQUES = {"BNS", "ChiSquare"};
@@ -121,7 +121,7 @@ public class BiomedQA {
 
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, StringHelper.solrPreprocessor(queryWords), SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
 				} else {
 					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
 				}
@@ -148,10 +148,20 @@ public class BiomedQA {
 				relevantTerms = CombHelper.intersect(terms);
 			} else if(COMBINATION_TECHNIQUE == Combination.Linear) {
 				Map<String, Double> sortedTerms = CombHelper.linear(lists, LINEAR_ALPHA);
-				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				if(SEMANTIC_FILTERING_ENABLED) {
+					relevantTerms = SimilarityHelper.applySemanticFiltering(
+							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
+				} else {
+					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				}
 			} else if(COMBINATION_TECHNIQUE == Combination.Borda) {
 				Map<String, Double> sortedTerms = CombHelper.borda(terms);
-				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				if(SEMANTIC_FILTERING_ENABLED) {
+					relevantTerms = SimilarityHelper.applySemanticFiltering(
+							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
+				} else {
+					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				}
 			}
 
 			queryWords = StringHelper.mergeTerms(queryWords, relevantTerms);
