@@ -3,6 +3,8 @@ package pk.edu.kics.dsl.qa;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -34,19 +36,21 @@ public class BiomedQA {
 		WordEmbedding
 	};
 
-	private final static Boolean COMBINATION_ENABLED = true;
+	private final static Boolean COMBINATION_ENABLED = false;
 	private final static Combination COMBINATION_TECHNIQUE = Combination.Linear;
 	private final static double LINEAR_ALPHA = 0.6;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"BNS", "ChiSquare"};
-	public final static int DOCUMENTS_FOR_QE = 40;
-	public final static int TOP_TERMS_TO_SELECT = 35;
-	public final static boolean DISPLAY_RESULTS = false;
+	private final static String[] QE_TECHNIQUES = {"Baseline", "ACC2", "BNS", "Bose", "ChiSquare", "CoCosine", 
+			"CoDice", "CoJaccard", "IdeRegular","MFT", "IDF", "TFIDF", "IG", "KLDivergence", "LRF", 
+			"OddsRatio", "PRF", "Rocchio", "RSV"};
+	public final static int DOCUMENTS_FOR_QE = 5;
+	public final static int TOP_TERMS_TO_SELECT = 5;
+	public final static boolean DISPLAY_RESULTS = true;
 
 	public final static boolean STEMMING_ENABLED = false;
-	
-	public final static boolean GLOBAL_QE_ENABLED = true;
+
+	public final static boolean GLOBAL_QE_ENABLED = false;
 
 	// only applicable for individual feature selection technique - not for combinations
 	public final static SemanticSource SEMANTIC_SOURCE_TECHNIQUE = SemanticSource.MeSH;
@@ -77,11 +81,11 @@ public class BiomedQA {
 					System.out.println("Done: " + experiment);
 				}
 			} else {
-				
+
 				experiment = COMBINATION_TECHNIQUE.toString() + "-" + String.join("+", QE_TECHNIQUES);;
-				
+
 				if(COMBINATION_TECHNIQUE == Combination.Linear) experiment += " (" + LINEAR_ALPHA + ")";
-				
+
 				IOHelper.deletePreviousResults();
 				processAllQuestions(questionsList, null);
 				Evaluation.evaluateResults(experiment);
@@ -105,23 +109,26 @@ public class BiomedQA {
 	private static void processQuestion(Question question, String qeTechnique, int counter) throws Exception {
 
 		SolrHelper solrHelper = new SolrHelper();
-		Question processedQ = new Question();
 		String relevantTerms = "";
-		String queryWords = question.getQuestion();
+		List<String> queryWordsList = StringHelper.stringTokenizer(question.getQuestion());
+		String queryWords = String.join(" ", queryWordsList);
+		Question tempQ = new Question();
+		tempQ.setTopicId(question.getTopicId());
+		tempQ.setQuestion(queryWords);
 
 		if(GLOBAL_QE_ENABLED) {
 			queryWords = GlobalQueryExpansion.getTranslatedQuery(queryWords);
 		}
-		
+
 		if(!COMBINATION_ENABLED) {
 			if(!qeTechnique.toLowerCase().equals("baseline")) {
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
 				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-				Map<String, Double> sortedTerms = qe.getRelevantTerms(question);
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ);
 
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
 				} else {
 					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
 				}
@@ -138,7 +145,7 @@ public class BiomedQA {
 				String technique = QE_TECHNIQUES[i];
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + technique;
 				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-				Map<String, Double> sortedTerms = qe.getRelevantTerms(question);
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ);
 				lists.add(sortedTerms);
 				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
 				terms.add(relevantTerms);
@@ -150,7 +157,7 @@ public class BiomedQA {
 				Map<String, Double> sortedTerms = CombHelper.linear(lists, LINEAR_ALPHA);
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
 				} else {
 					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
 				}
@@ -158,7 +165,7 @@ public class BiomedQA {
 				Map<String, Double> sortedTerms = CombHelper.borda(terms);
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, StringHelper.solrPreprocessor(question.getQuestion()), SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
 				} else {
 					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
 				}
@@ -170,14 +177,12 @@ public class BiomedQA {
 		if(DISPLAY_RESULTS) {
 			System.out.println("Final Query: " + queryWords);
 		}
-		
-		ArrayList<String> finalQuery = StringHelper.solrPreprocessor(queryWords);
 
-		processedQ.setTopicId(question.topicId);
-		processedQ.setQuestion(String.join(" ", finalQuery));
+		// update the question with the new querywords
+		tempQ.setQuestion(queryWords);
 
 		// There are a maximum of ~614 documents for any particular topic
-		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(processedQ, 0, 650);
+		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0, 650);
 		IOHelper.writeResult(resultsList, counter);
 	}
 
