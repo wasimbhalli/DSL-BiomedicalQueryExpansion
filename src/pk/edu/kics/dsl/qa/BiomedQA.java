@@ -25,6 +25,11 @@ import pk.edu.kics.dsl.qa.util.StringHelper;
 
 public class BiomedQA {
 
+	public static enum EvaluationType
+	{
+		BIOAsq,
+		TRECGenomic
+	};
 	private enum Combination {
 		Intersection, 
 		Borda, 
@@ -57,17 +62,18 @@ public class BiomedQA {
 	public final static boolean SEMANTIC_FILTERING_ENABLED = false;
 	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 5;
 
-	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
+	private final static String QUESTIONS_PATH = "resources/BioASQ-task5bPhaseA-testset1";
 	public final static String SOLR_SERVER = "localhost";
-	public final static String SOLR_CORE = "genomic_html";
+	public final static String SOLR_CORE = "trec_genomic";
 	public final static String CONTENT_FIELD = "body";	
 	public final static int TOTAL_DOCUMENTS = 162259;
-
+	public final static EvaluationType evalType = EvaluationType.BIOAsq;
+	public static int TOTAL_QUESTION;
 
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
 
-		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
-
+		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH,evalType);
+		TOTAL_QUESTION = questionsList.size();
 		try {
 			String experiment = "";
 
@@ -76,7 +82,7 @@ public class BiomedQA {
 					experiment = QE_TECHNIQUES[i];
 					IOHelper.deletePreviousResults();
 					processAllQuestions(questionsList, QE_TECHNIQUES[i]);
-					Evaluation.evaluateResults(experiment);
+					Evaluation.evaluateResults(experiment,evalType);
 
 					System.out.println("Done: " + experiment);
 				}
@@ -88,7 +94,7 @@ public class BiomedQA {
 
 				IOHelper.deletePreviousResults();
 				processAllQuestions(questionsList, null);
-				Evaluation.evaluateResults(experiment);
+				Evaluation.evaluateResults(experiment,evalType);
 
 				System.out.println("Done: " + experiment);
 			}
@@ -106,6 +112,12 @@ public class BiomedQA {
 		}
 	}
 
+	/**
+	 * @param question
+	 * @param qeTechnique
+	 * @param counter
+	 * @throws Exception
+	 */
 	private static void processQuestion(Question question, String qeTechnique, int counter) throws Exception {
 
 		SolrHelper solrHelper = new SolrHelper();
@@ -183,7 +195,7 @@ public class BiomedQA {
 
 		// There are a maximum of ~614 documents for any particular topic
 		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0, 650);
-		IOHelper.writeResult(resultsList, counter);
+			IOHelper.writeResult(resultsList, counter,evalType,question);
 	}
 
 
