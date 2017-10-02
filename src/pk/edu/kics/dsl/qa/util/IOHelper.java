@@ -100,15 +100,11 @@ public class IOHelper {
 
 	// TODO: Append results of all questions in a single file
 	@SuppressWarnings("unchecked")
-	public static void writeResult(ArrayList<SolrResult> resultsList, int questionNo, EvaluationType type, Question question)
-			throws IOException {
-
-		JSONArray documentURLs = null;
-		JSONObject questionResult;
+	public static void writeResult(ArrayList<SolrResult> resultsList, int questionNo, EvaluationType type,
+			Question question) throws IOException {
+		
 		BufferedWriter writer;
-
 		File f = new File(docResult);
-
 		if (f.exists()) {
 			// System.out.println("File existed");
 			writer = new BufferedWriter(new FileWriter(docResult, true));
@@ -118,43 +114,9 @@ public class IOHelper {
 		// new PrintWriter();
 		// String []lines = resultFile.toString().split(System.lineSeparator());
 		if (type == EvaluationType.TRECGenomic) {
-			for (SolrResult result : resultsList) {
-				String resultLine = result.getTopicId() + "\t" + result.getPmid() + "\t" + result.getRank() + "\t"
-						+ result.getStartOffset() + "\t" + result.getLength() + "\n";
-
-				writer.write(resultLine);
-
-			}
-
-			writer.flush();
-			writer.close();
-
-		} 
-		else if (type == EvaluationType.BIOAsq) 
-		{
-			
-			questionResult = new JSONObject();
-			documentURLs = new JSONArray();
-			JSONArray concepts, documents, snippets, triplets;
-			System.out.println("Retrieving Documents ...");
-			for (SolrResult result : resultsList) {
-				
-				documentURLs.add("http://www.ncbi.nlm.nih.gov/pubmed/" + result.getPmid());
-			}
-			questionResult.put("documents",documentURLs);
-			questionResult.put("id", question.getTopicId());
-			questionResult.put("concepts", " ");
-			questionResult.put("snippets", " ");
-			questionResult.put("triplets", " ");
-			
-			results.add(questionResult);
-			}
-		
-		System.out.println("Done with query: " + questionNo);
-		if(--BiomedQA.TOTAL_QUESTION == 0 )
-		{	
-			writeSubmissionFile(results,docResult);
-			results.clear();
+			writeTRECGEnomicResult(results, writer);
+		} else if (type == EvaluationType.BIOAsq) {
+			writeBIOAsqResults(resultsList,writer,question);
 		}
 
 	}
@@ -189,7 +151,7 @@ public class IOHelper {
 
 	// json format result of the BIO-ASQ
 	@SuppressWarnings("unchecked")
-	public static String writeSubmissionFile(JSONArray results, String name) {
+	public static void writeSubmissionFile(JSONArray results, String name) {
 
 		JSONObject resultObject = new JSONObject();
 		resultObject.put("username", "wasim");
@@ -201,11 +163,11 @@ public class IOHelper {
 
 		FileWriter file = null;
 		try {
-			String path = name + "-testset4.json";
+			String path = name.substring(0,name.lastIndexOf(".")) + ".json";
 			file = new FileWriter(path);
 			file.write(resultObject.toString());
 			System.out.println("File Succussfully saved in Resources");
-			return path;
+			
 		} catch (IOException r) {
 			r.getMessage();
 		} finally {
@@ -218,6 +180,52 @@ public class IOHelper {
 				e.printStackTrace();
 			}
 		}
-		return null;
 	}
+
+	@SuppressWarnings({ "null", "unused" })
+	private static void writeTRECGEnomicResult(ArrayList<SolrResult> resultsList, BufferedWriter writer)
+			throws IOException {
+
+		File f = new File(docResult);
+		for (SolrResult result : resultsList) {
+			String resultLine = result.getTopicId() + "\t" + result.getPmid() + "\t" + result.getRank() + "\t"
+					+ result.getStartOffset() + "\t" + result.getLength() + "\n";
+
+			writer.write(resultLine);
+
+		}
+
+		writer.flush();
+		writer.close();
+
+	}
+
+	@SuppressWarnings({ "unchecked", "unused" })
+	private static void writeBIOAsqResults(ArrayList<SolrResult> resultsList, BufferedWriter writer,
+			Question question) {
+		JSONArray documentURLs = null;
+		JSONObject questionResult;
+
+		questionResult = new JSONObject();
+		documentURLs = new JSONArray();
+		JSONArray concepts, documents, snippets, triplets;
+		System.out.println("Retrieving Documents ...");
+		for (SolrResult result : resultsList) {
+
+			documentURLs.add("http://www.ncbi.nlm.nih.gov/pubmed/" + result.getPmid());
+		}
+		questionResult.put("documents", documentURLs);
+		questionResult.put("id", question.getTopicId());
+		questionResult.put("concepts", new JSONArray());
+		questionResult.put("snippets", new JSONArray());
+		questionResult.put("triplets", new JSONArray());
+
+		results.add(questionResult);
+		if (--BiomedQA.TOTAL_QUESTION == 0) {
+			writeSubmissionFile(results, docResult);
+			results.clear();
+
+		}
+	}
+
 }
