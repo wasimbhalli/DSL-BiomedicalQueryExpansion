@@ -3,6 +3,7 @@ package pk.edu.kics.dsl.qa.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,8 +31,10 @@ public class IOHelper {
 			questionEntity.topicId = Integer.parseInt(sCurrentLine.substring(1, sCurrentLine.indexOf(">")));
 			questionEntity.MeSHAspects = sCurrentLine.substring(sCurrentLine.indexOf("[") + 1,
 					sCurrentLine.indexOf("]"));
-			questionEntity.text = sCurrentLine.substring(sCurrentLine.indexOf(">") + 1, sCurrentLine.indexOf("["))
-					+ sCurrentLine.substring(sCurrentLine.indexOf("]") + 1, sCurrentLine.indexOf("?"));
+			questionEntity.text = 
+					sCurrentLine.substring(sCurrentLine.indexOf(">") + 1, sCurrentLine.indexOf("[")) +
+					questionEntity.MeSHAspects.toLowerCase() + 
+					sCurrentLine.substring(sCurrentLine.indexOf("]") + 1, sCurrentLine.indexOf("?"));
 			questionList.add(questionEntity);
 		}
 
@@ -42,7 +45,7 @@ public class IOHelper {
 	}
 
 	// TODO: Append results of all questions in a single file
-	public static void writeResult(ArrayList<SolrResult> resultsList) throws IOException {
+	public static void writeResult(ArrayList<SolrResult> resultsList, int questionNo) throws IOException {
 
 		BufferedWriter writer;
 
@@ -65,7 +68,35 @@ public class IOHelper {
 
 		writer.flush();
 		writer.close();
-		System.out.println("Results saved successfuly: " + docResult);
+		System.out.println("Done with query: " + questionNo);
 
+	}
+
+	public static ArrayList<String> getListFromTextFile(String path) {
+		ArrayList<String> linesList = new ArrayList<>();
+		BufferedReader br = null;
+		FileReader fr = null;
+		
+		try {
+			fr = new FileReader(new File(path));
+			br = new BufferedReader(fr);
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				linesList.add(line);
+			}
+
+			br.close();
+			fr.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return linesList;
+	}
+
+	public static void deletePreviousResults() {
+		File f = new File(docResult);
+		f.delete();
 	}
 }
