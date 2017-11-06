@@ -2,25 +2,8 @@ package pk.edu.kics.dsl.qa.entity;
 
 public class Question {
 	
-	public String topicId;
+	public int topicId;
 	public String text;
-	public String type;
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public String MeSHAspects;
 	
 	public String getQuestion() {
@@ -31,11 +14,11 @@ public class Question {
 		this.text = question;
 	}
 
-	public String getTopicId() {
+	public int getTopicId() {
 		return topicId;
 	}
 
-	public void setTopicId(String topId) {
+	public void setTopicId(int topId) {
 		this.topicId = topId;
 	}
 
