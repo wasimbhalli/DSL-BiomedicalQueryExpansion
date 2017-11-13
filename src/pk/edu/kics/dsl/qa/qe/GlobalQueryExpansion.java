@@ -28,7 +28,7 @@ import pk.edu.kics.dsl.qa.util.MetaMapResults;
 public class GlobalQueryExpansion extends QueryExpansion {
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) { return null; }
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) { return null; }
 
 	public String getRelatedTerms(Question question) {
 		return getMetamapVariants(question.getQuestion());

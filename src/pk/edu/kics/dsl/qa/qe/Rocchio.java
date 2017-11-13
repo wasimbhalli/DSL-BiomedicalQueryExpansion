@@ -14,8 +14,8 @@ public class Rocchio extends IdeRegular {
 	private final int M = 2;
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
-		super.init(question);
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
+		super.init(question,docCount);
 
 		for(String key: localDictionary) {
 			double qTFIDF = 0, dTFIDF = 0;

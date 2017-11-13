@@ -15,10 +15,10 @@ public class IdeRegular extends LocalQueryExpansion
 	HashMap<String, Double> relevantDocumentsTFIDFVector = new HashMap<>();
 	HashMap<String, Double> questionTFIDFVector = new HashMap<>();
 
-	public void init(Question question) {
+	public void init(Question question,int docCount) {
 		try 
 		{
-			super.init(question);
+			super.init(question,docCount);
 			
 			// get the sum of all tfidf scores for each retrieved document.
 			relevantDocumentsTFIDFVector = QEHelper.getTermsTFIDF(localDictionary, documentFrequency, documentTermFrequencies);
@@ -40,8 +40,8 @@ public class IdeRegular extends LocalQueryExpansion
 	}
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
-		this.init(question);
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
+		this.init(question,docCount);
 
 		for(String key:relevantDocumentsTFIDFVector.keySet()) {
 			double newTFIDF = relevantDocumentsTFIDFVector.get(key)*resultsList.size();

@@ -6,6 +6,6 @@ import pk.edu.kics.dsl.qa.entity.Question;
 
 public abstract class QueryExpansion {
 
-	public abstract Map<String, Double> getRelevantTerms(Question question);
+	public abstract Map<String, Double> getRelevantTerms(Question question,int doc_qeCount);
 	
 }

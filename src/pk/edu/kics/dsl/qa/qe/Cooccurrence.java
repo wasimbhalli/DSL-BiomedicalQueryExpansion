@@ -14,9 +14,9 @@ public class Cooccurrence extends LocalQueryExpansion {
 	protected HashMap<String, HashMap<String, Double>> coDegree = new HashMap<>();
 
 	@Override
-	public void init(Question question) {
+	public void init(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 
 			ArrayList<String> questionTerms = StringHelper.analyzeContent(question.getQuestion(), false);
 
@@ -61,13 +61,13 @@ public class Cooccurrence extends LocalQueryExpansion {
 		}
 	}
 	
-	protected void calculateCoDegree(String questionKey, String dictionaryKey, double coQiC) {
+	protected void calculateCoDegree(String questionKey, String dictionaryKey, double coQiC,int docCount) {
 		
 		int docFrequency = BiomedQA.TOTAL_DOCUMENTS;
 		if(documentFrequency.containsKey(dictionaryKey)) docFrequency = documentFrequency.get(dictionaryKey);
 		
 		double idf = Math.log((double)BiomedQA.TOTAL_DOCUMENTS/docFrequency);
-		double coDegreeValue = Math.log(coQiC + 1) * (idf/Math.log(BiomedQA.DOCUMENTS_FOR_QE));
+		double coDegreeValue = Math.log(coQiC + 1) * (idf/Math.log(BiomedQA.DOCUMENTS_FOR_QE[docCount]));
 		
 		HashMap<String, Double> inner = coDegree.get(questionKey);
 		

@@ -12,9 +12,11 @@ public class Evaluation {
 
 	// Set all paths to refer to local resources folder
 	final static String goldStdPath = "resources/trecgen2007.gold.standard.tsv.txt";
+	//final static String goldStdPath = "resources/ohsu-gold.txt";
 	final static String pyScript = "resources/script/trecgen2007_score.py";
+	
 
-	public static void evaluateResults(String experiment) throws IOException {
+	public static void evaluateResults(String experiment,int TopTermsIndex,int documentQEindex) throws IOException {
 		Runtime rt = Runtime.getRuntime();
 		Process proc = rt.exec("python" + " " + pyScript + " " + goldStdPath + " " + "resources/queryResults.txt");
 		try {
@@ -43,7 +45,8 @@ public class Evaluation {
 			} else {
 				mapwriter = new BufferedWriter(new FileWriter(f));
 			}
-			mapwriter.write(experiment.trim() + "," + MAP.trim() + "\n");
+			
+			mapwriter.write(experiment.trim() + "," + MAP.trim()+ "," + TopTermsIndex + "," + documentQEindex + "\n");//+ "\n"
 			mapwriter.flush();
 			mapwriter.close();
 			

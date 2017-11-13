@@ -13,7 +13,7 @@ import pk.edu.kics.dsl.qa.BiomedQA;
 
 public class SimilarityHelper {
 
-	public static String applySemanticFiltering(Map<String, Double> termsScore, List<String> query, BiomedQA.SemanticSource semanticSource) {
+	public static String applySemanticFiltering(Map<String, Double> termsScore, List<String> query, BiomedQA.SemanticSource semanticSource,int z) {
 		
 		String result = "";
 		
@@ -22,15 +22,15 @@ public class SimilarityHelper {
 		//System.out.println("Query Size:" + query.size() + " Terms Size: " + BiomedQA.TOP_TERMS_FOR_SEMANTIC_FILTERING);
 		
 		if(semanticSource == BiomedQA.SemanticSource.MeSH) {
-			result = applyMeSHSemanticFiltering(termsScore, query);
+			result = applyMeSHSemanticFiltering(termsScore, query,z);
 		} else {
-			result = applyWESemanticFiltering(termsScore, query);
+			result = applyWESemanticFiltering(termsScore, query,z);
 		}
 		
 		return result;
 	}
 	
-	public static String applyWESemanticFiltering(Map<String, Double> termsScore, List<String> query) {
+	public static String applyWESemanticFiltering(Map<String, Double> termsScore, List<String> query,int z) {
 		
 		HashMap<String, Double> semanticScore = new HashMap<>();
 		
@@ -57,7 +57,7 @@ public class SimilarityHelper {
 			sortedSemanticScore.put(key, initialSemanticScore + initialTermScore);
 		}
 		
-		String relevantTerms=  CollectionHelper.getTopTerms(sortedSemanticScore, BiomedQA.TOP_TERMS_TO_SELECT);
+		String relevantTerms=  CollectionHelper.getTopTerms(sortedSemanticScore, BiomedQA.TOP_TERMS_TO_SELECT[z]);
 
 		return relevantTerms;		
 	}
@@ -87,7 +87,7 @@ public class SimilarityHelper {
 		return s.hasNext() ? s.next() : "";
 	}
 	
-	public static String applyMeSHSemanticFiltering(Map<String, Double> termsScore, List<String> query) {
+	public static String applyMeSHSemanticFiltering(Map<String, Double> termsScore, List<String> query,int z) {
 
 		String filePath = "resources/temp.txt";
 		PrintWriter pw;
@@ -121,7 +121,7 @@ public class SimilarityHelper {
 			sortedSemanticScore.put(key, initialSemanticScore + initialTermScore);
 		}
 		
-		String relevantTerms=  CollectionHelper.getTopTerms(sortedSemanticScore, BiomedQA.TOP_TERMS_TO_SELECT);
+		String relevantTerms=  CollectionHelper.getTopTerms(sortedSemanticScore, BiomedQA.TOP_TERMS_TO_SELECT[z]);
 
 		return relevantTerms;
 	}

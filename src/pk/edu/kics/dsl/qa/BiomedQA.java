@@ -1,5 +1,8 @@
 package pk.edu.kics.dsl.qa;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,16 +14,25 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.json.JSONException;
 import org.json.simple.parser.ParseException;
 
+import com.google.common.annotations.GwtIncompatible;
+
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
+import pk.edu.kics.dsl.qa.qe.ChiSquare;
+import pk.edu.kics.dsl.qa.qe.ChiSquareProbabilityBased;
+import pk.edu.kics.dsl.qa.qe.GeneIndex;
 import pk.edu.kics.dsl.qa.qe.GlobalQueryExpansion;
+import pk.edu.kics.dsl.qa.qe.KLDivergence;
 import pk.edu.kics.dsl.qa.qe.KLDivergence2;
+import pk.edu.kics.dsl.qa.qe.MFT2;
+import pk.edu.kics.dsl.qa.qe.PoisonRatio;
 import pk.edu.kics.dsl.qa.qe.QueryExpansion;
 import pk.edu.kics.dsl.qa.util.CollectionHelper;
 import pk.edu.kics.dsl.qa.util.CombHelper;
 import pk.edu.kics.dsl.qa.util.Evaluation;
 import pk.edu.kics.dsl.qa.util.IOHelper;
 import pk.edu.kics.dsl.qa.util.SimilarityHelper;
+import pk.edu.kics.dsl.qa.util.SolrHelper2;
 import pk.edu.kics.dsl.qa.util.SolrHelper;
 import pk.edu.kics.dsl.qa.util.StringHelper;
 
@@ -42,9 +54,10 @@ public class BiomedQA {
 	private final static double LINEAR_ALPHA = 0.6;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"KLDivergence"};
-	public final static int DOCUMENTS_FOR_QE = 55;
-	public final static int TOP_TERMS_TO_SELECT =55;
+	private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased","ChiSquare","KLDivergence2","RSV2","CoDice","IG","LRF", "MFT", "PRF", "Rocchio","GeneIndex"};
+	//private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased"};
+	public final static int []DOCUMENTS_FOR_QE = {5,10,15,20,25,30,35,40,45,50,55,60};
+	public final static int[] TOP_TERMS_TO_SELECT = {5,10,15,20,25,30,35,40,45,50,55,60};
 	public final static boolean DISPLAY_RESULTS = true;
 
 	public final static boolean STEMMING_ENABLED = false;
@@ -57,15 +70,20 @@ public class BiomedQA {
 	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 5;
 
 	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
-	public final static String SOLR_SERVER = "localhost";
-	public final static String SOLR_CORE = "genomic_html";
-	public final static String CONTENT_FIELD = "body";	
-	public final static int TOTAL_DOCUMENTS = 162259;
+	public final static String SOLR_SERVER ="localhost";
+	public final static String SOLR_CORE ="genomic_html";//"oshumed";//"genomic_html";
+	public final static String CONTENT_FIELD = "body";//"contents";	
+	public final static int TOTAL_DOCUMENTS =162259;//348566;
 
 
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
 
-		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
+		
+		
+		for(int docCount=0;docCount<DOCUMENTS_FOR_QE.length;docCount++) {
+			
+			for(int z=0;z<TOP_TERMS_TO_SELECT.length;z++) {
+			ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
 
 		try {
 			String experiment = "";
@@ -74,8 +92,11 @@ public class BiomedQA {
 				for (int i = 0; i < QE_TECHNIQUES.length; i++) {
 					experiment = QE_TECHNIQUES[i];
 					IOHelper.deletePreviousResults();
-					processAllQuestions(questionsList, QE_TECHNIQUES[i]);
-					Evaluation.evaluateResults(experiment);
+					processAllQuestions(questionsList, QE_TECHNIQUES[i],z,docCount);
+					
+					
+					
+					Evaluation.evaluateResults(experiment,TOP_TERMS_TO_SELECT[z],DOCUMENTS_FOR_QE[docCount]);
 
 					System.out.println("Done: " + experiment);
 				}
@@ -86,8 +107,8 @@ public class BiomedQA {
 				if(COMBINATION_TECHNIQUE == Combination.Linear) experiment += " (" + LINEAR_ALPHA + ")";
 
 				IOHelper.deletePreviousResults();
-				processAllQuestions(questionsList, null);
-				Evaluation.evaluateResults(experiment);
+				processAllQuestions(questionsList, null,z,docCount);
+				Evaluation.evaluateResults(experiment,TOP_TERMS_TO_SELECT[z],DOCUMENTS_FOR_QE[docCount]);
 
 				System.out.println("Done: " + experiment);
 			}
@@ -96,26 +117,40 @@ public class BiomedQA {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	
+	 }
+		
+		
+		
+		
+		
+		
+		
+		
+	}//outer for loop
+	
+	
+}
 
-	private static void processAllQuestions(ArrayList<Question> questionsList, String qeTechnique) throws Exception {
+	private static void processAllQuestions(ArrayList<Question> questionsList, String qeTechnique,int z,int docCount) throws Exception {
 		int counter = 1;
 		int cc=0;
 		for (Question question : questionsList) {
 			System.out.println("ForQuery="+cc);
 			cc++;
-			processQuestion(question, qeTechnique, counter++);
+			processQuestion(question, qeTechnique, counter++,z,docCount);
 			
 			
-			if(cc==2)
-				break;
+		   /*if(cc==2)
+				break;*/
 			
 		}
 	}
 
-	private static void processQuestion(Question question, String qeTechnique, int counter) throws Exception {
+	private static void processQuestion(Question question, String qeTechnique, int counter,int z,int docCount) throws Exception {
 
-		SolrHelper solrHelper = new SolrHelper();
+		SolrHelper2 solrHelper = new SolrHelper2();
+		//SolrHelper solrHelper = new SolrHelper();
 		String relevantTerms = "";
 		List<String> queryWordsList = StringHelper.stringTokenizer(question.getQuestion());
 		String queryWords = String.join(" ", queryWordsList);
@@ -131,19 +166,19 @@ public class BiomedQA {
 			if(!qeTechnique.toLowerCase().equals("baseline")) {
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + qeTechnique;
 				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ);
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ,docCount);
 
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE,z);
 				} else {
-					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT[z]);
 				}
 
 				if(relevantTerms!=null && !relevantTerms.isEmpty()) {
 					queryWords = StringHelper.mergeTerms(queryWords, relevantTerms);
 				}
-			}	
+			}
 		} else {
 			ArrayList<String> terms = new ArrayList<>();
 			ArrayList<Map<String, Double>> lists = new ArrayList<>();
@@ -152,9 +187,9 @@ public class BiomedQA {
 				String technique = QE_TECHNIQUES[i];
 				String qeClass = "pk.edu.kics.dsl.qa.qe." + technique;
 				QueryExpansion qe = (QueryExpansion) Class.forName(qeClass).newInstance();
-				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ);
+				Map<String, Double> sortedTerms = qe.getRelevantTerms(tempQ,docCount);
 				lists.add(sortedTerms);
-				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+				relevantTerms=  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT[z]);
 				terms.add(relevantTerms);
 			}
 
@@ -164,17 +199,17 @@ public class BiomedQA {
 				Map<String, Double> sortedTerms = CombHelper.linear(lists, LINEAR_ALPHA);
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE,z);
 				} else {
-					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT[z]);
 				}
 			} else if(COMBINATION_TECHNIQUE == Combination.Borda) {
-				Map<String, Double> sortedTerms = CombHelper.borda(terms);
+				Map<String, Double> sortedTerms = CombHelper.borda(terms,z);
 				if(SEMANTIC_FILTERING_ENABLED) {
 					relevantTerms = SimilarityHelper.applySemanticFiltering(
-							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE);
+							sortedTerms, queryWordsList, SEMANTIC_SOURCE_TECHNIQUE,z);
 				} else {
-					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT);
+					relevantTerms =  CollectionHelper.getTopTerms(sortedTerms, TOP_TERMS_TO_SELECT[z]);
 				}
 			}
 
@@ -189,7 +224,7 @@ public class BiomedQA {
 		tempQ.setQuestion(queryWords);
 
 		// There are a maximum of ~614 documents for any particular topic
-		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0, 9500);
+		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0,9500);//9500
 		IOHelper.writeResult(resultsList, counter);
 	}
 

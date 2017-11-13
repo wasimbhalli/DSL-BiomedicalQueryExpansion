@@ -1,4 +1,4 @@
-package pk.edu.kics.dsl.qa.qe;
+/*package pk.edu.kics.dsl.qa.qe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,17 +18,17 @@ public class MostFrequentTerms extends LocalQueryExpansion {
 	final int NUMBER_OF_TERMS = 10;
 
 	@Override
-	public String getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int Terms) {
 
 		// Call to server and populate resultsList and content words method
 		try {
-			super.setResultsList(question);
-			super.SetAllContentWords();
+			//super.setResultsList(question);
+			//super.SetAllContentWords();
 		} catch (SolrServerException | IOException e) {
 			e.printStackTrace();
 		}
 
-		return StringUtils.join(getOrderedTermsByFrequency(super.allContentWords), " ");
+		return StringUtils.join(getOrderedTermsByFrequency(super.allContentWords), " ");//super.allContentWords
 	}
 
 	private ArrayList<String> getOrderedTermsByFrequency(ArrayList<String> allContentWords) {
@@ -59,3 +59,4 @@ public class MostFrequentTerms extends LocalQueryExpansion {
 	}
 
 }
+*/

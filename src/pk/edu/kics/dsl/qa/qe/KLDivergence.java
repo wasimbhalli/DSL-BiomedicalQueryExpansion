@@ -20,9 +20,9 @@ public class KLDivergence extends FeatureSelection {
 	int conditionMetTermsCount = 0;
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,15 +59,15 @@ public class KLDivergence extends FeatureSelection {
 		// trp //frp
 
 		for (String key : truePositive.keySet()) {
-			truePositiveRate.put(key, (double) truePositive.get(key) / BiomedQA.DOCUMENTS_FOR_QE);
+			truePositiveRate.put(key, (double) truePositive.get(key) / BiomedQA.DOCUMENTS_FOR_QE[docCount]);
 		}
 
 		for (String key : falsePositive.keySet()) {
 			falsePositiveRate.put(key,
-					(double) falsePositive.get(key) / (BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE));
+					(double) falsePositive.get(key) / (BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE[docCount]));
 		}
 
-		int cc = 0;
+		//int cc = 0;
 		for (String key : result.keySet()) {
 
 			double termTPR = 0.00001;
@@ -92,13 +92,13 @@ public class KLDivergence extends FeatureSelection {
 			fprResult.add(termFPR);
 
 			double score = termTPR - termFPR;
-			if(score>0.6)
+			//if(score>0.6)
 			{	sortedTermsScoreAcc.put(key, score);
 		      	conditionMetTermsCount++;
 			 }
-			if (cc++ == 55) {
+			/*if (cc++ == 9) {
 				break;
-			}
+			}*/
 
 		}
 
@@ -118,6 +118,14 @@ public class KLDivergence extends FeatureSelection {
 
 		sortedTermsScoreAcc = CollectionHelper.sortByComparator(sortedTermsScoreAcc, false);
 		System.out.println("conditionMetTermsCount=" + conditionMetTermsCount);
+		
+		
+		
+		System.out.println("size="+tprResult.size()+","+fprResult.size()+","+sortedTermsScoreAcc.size());
+		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
+		
+		
+		
 		return sortedTermsScoreAcc;
 		// return result;
 

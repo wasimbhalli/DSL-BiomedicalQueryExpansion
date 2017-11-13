@@ -21,13 +21,13 @@ import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
 
-public class SolrHelper {
+public class SolrHelper2 {
 
 	static String urlString = "http://"  + BiomedQA.SOLR_SERVER + ":8983/solr/" + BiomedQA.SOLR_CORE;
 	static SolrClient solr;
 	static SolrQuery solrQuery;
 
-	public SolrHelper() {
+	public SolrHelper2() {
 		solr = new HttpSolrClient.Builder(urlString).build();
 		solrQuery = new SolrQuery();
 	}
@@ -39,7 +39,7 @@ public class SolrHelper {
 		solrQuery.setRequestHandler("/select");
 		solrQuery.setStart(start);
 		solrQuery.setRows(rowNo);
-		solrQuery.set("fl", "", "score", "docno","contents");
+		solrQuery.set("fl", "", "score", "id","body");
 
 		QueryResponse response = solr.query(solrQuery);
 		SolrDocumentList documentList = response.getResults();
@@ -51,14 +51,13 @@ public class SolrHelper {
 			SolrResult solrResult = new SolrResult();
 
 			solrResult.setTopicId(String.valueOf(question.topicId));
-			String pmid = document.get("docno").toString();
-			//solrResult.setPmid(pmid.substring(pmid.lastIndexOf("/") + 1, pmid.lastIndexOf(".")));
-			solrResult.setPmid(pmid.replace("[", "").replace("]", ""));
+			String pmid = document.get("id").toString();
+			solrResult.setPmid(pmid.substring(pmid.lastIndexOf("/") + 1, pmid.lastIndexOf(".")));
 			solrResult.setRank(rank++);
 			solrResult.setStartOffset(0);
 			solrResult.setLength(0);
 			solrResult.setScore((float)document.get("score"));
-			solrResult.setContent(document.get("contents").toString());
+			solrResult.setContent(document.get("body").toString());
 
 			resultsList.add(solrResult);
 		}
@@ -69,12 +68,12 @@ public class SolrHelper {
 	public ArrayList<HashMap<String, Integer>> getCorpusStatistics(String terms) throws IOException, ParseException, JSONException {
 
 		String urlParameters  = "terms.list=" + terms;
-		String url = urlString + "/terms?wt=json&terms.fl=contents&terms.ttf=true";
+		String url = urlString + "/terms?wt=json&terms.fl=body&terms.ttf=true";
 		String response = HttpHelper.getResponse(url, urlParameters);
 
 		JSONObject jsonObject = new JSONObject(response);
 		JSONObject termsObject = (JSONObject) jsonObject.get("terms");
-		JSONObject body =  (JSONObject) termsObject.get("contents");
+		JSONObject body =  (JSONObject) termsObject.get("body");
 
 		return getTTFDFDictionary(body);
 	}

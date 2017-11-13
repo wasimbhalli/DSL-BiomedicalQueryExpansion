@@ -13,9 +13,9 @@ public class FeatureSelection extends LocalQueryExpansion {
 	HashMap<String, Integer> falseNegative = new HashMap<>();
 	HashMap<String, Integer> trueNegative = new HashMap<>();
 
-	public void init(Question question) {
+	public void init(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -67,7 +67,7 @@ public class FeatureSelection extends LocalQueryExpansion {
 
 	// Override method in child class for implementation of scoring
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		return null;
 	}
 

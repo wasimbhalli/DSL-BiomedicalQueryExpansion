@@ -13,9 +13,9 @@ public class CoJaccard extends Cooccurrence {
 	HashMap<String, HashMap<String, Double>> jaccard = new HashMap<>();
 	
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,7 +33,7 @@ public class CoJaccard extends Cooccurrence {
 			for(String questionKey: questionTerms) {
 				HashMap<String, Double> dictionaryVector = jaccard.get(questionKey);
 				for (String dictionaryKey: dictionaryVector.keySet()) {
-					calculateCoDegree(questionKey, dictionaryKey, dictionaryVector.get(dictionaryKey));
+					calculateCoDegree(questionKey, dictionaryKey, dictionaryVector.get(dictionaryKey),docCount);
 				}
 			}
 			

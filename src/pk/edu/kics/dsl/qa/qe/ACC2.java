@@ -14,19 +14,19 @@ public class ACC2 extends FeatureSelection {
 	HashMap<String, Double> termsScore = new HashMap<>();
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		for (String key : truePositive.keySet()) {
-			truePositiveRate.put(key, (double) truePositive.get(key)/BiomedQA.DOCUMENTS_FOR_QE);
+			truePositiveRate.put(key, (double) truePositive.get(key)/BiomedQA.DOCUMENTS_FOR_QE[docCount]);
 		}
 
 		for (String key : falsePositive.keySet()) {
-			falsePositiveRate.put(key, (double) falsePositive.get(key)/(BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE));
+			falsePositiveRate.put(key, (double) falsePositive.get(key)/(BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE[docCount]));
 		}
 
 

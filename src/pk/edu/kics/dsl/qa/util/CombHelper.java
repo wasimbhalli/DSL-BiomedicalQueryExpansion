@@ -33,7 +33,7 @@ public class CombHelper {
 		return result;
 	}
 
-	public static Map<String, Double> borda(ArrayList<String> termLists) {
+	public static Map<String, Double> borda(ArrayList<String> termLists,int z) {
 
 		ArrayList<List<String>> allLists = new ArrayList<List<String>>();
 		HashMap<String, Double> finalScore = new HashMap<>();
@@ -53,7 +53,7 @@ public class CombHelper {
 		
 		for(String key:finalTermsList) {
 			int score = 0;
-			final int MAX_LIST_SIZE = BiomedQA.TOP_TERMS_TO_SELECT;
+			final int MAX_LIST_SIZE = BiomedQA.TOP_TERMS_TO_SELECT[z];
 			
 			for(List<String> list: allLists) {
 				if(list.contains(key)) score += MAX_LIST_SIZE - list.indexOf(key);

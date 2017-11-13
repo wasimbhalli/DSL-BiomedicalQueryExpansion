@@ -3,7 +3,6 @@ package pk.edu.kics.dsl.qa.qe;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -16,11 +15,14 @@ import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
 import pk.edu.kics.dsl.qa.util.SolrHelper;
+import pk.edu.kics.dsl.qa.util.SolrHelper2;
+//import pk.edu.kics.dsl.qa.util.SolrHelper;
 import pk.edu.kics.dsl.qa.util.StringHelper;
 
 public class LocalQueryExpansion extends QueryExpansion{
 
-	private SolrHelper solrHelper;
+	private SolrHelper2 solrHelper;
+	//private SolrHelper solrHelper;
 	protected ArrayList<SolrResult> resultsList;
 	
 	protected ArrayList<String> localDictionary = new ArrayList<>();
@@ -44,13 +46,14 @@ public class LocalQueryExpansion extends QueryExpansion{
 	
 	protected long totalCorpusTermsFrquency = 0;
 
-	public void init(Question question) throws SolrServerException, IOException, ParseException, JSONException {
-		setSolrDocuments(question);
+	public void init(Question question,int docCount) throws SolrServerException, IOException, ParseException, JSONException {
+		setSolrDocuments(question,docCount);
 		buildTermDocumentMatrix(resultsList);
 		String terms = StringHelper.getTermsByComma(localDictionary);
 		ArrayList<HashMap<String, Integer>> statistics = solrHelper.getCorpusStatistics(terms);
 		termsTotalFrequency = statistics.get(0);
 		documentFrequency = statistics.get(1);
+		//totalCorpusTermsFrquency = SolrHelper2.getCorpusTermsFrquencySum();
 		totalCorpusTermsFrquency = SolrHelper.getCorpusTermsFrquencySum();
 		
 		for(String term: localDictionary) {			
@@ -68,7 +71,7 @@ public class LocalQueryExpansion extends QueryExpansion{
 	}
 	
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		return null;
 	}
 	
@@ -76,12 +79,13 @@ public class LocalQueryExpansion extends QueryExpansion{
 		return resultsList;
 	}
 
-	public void setSolrDocuments(Question q) throws SolrServerException, IOException {
-		this.resultsList = solrHelper.submitQuery(q, 0, BiomedQA.DOCUMENTS_FOR_QE);
+	public void setSolrDocuments(Question q,int docCount) throws SolrServerException, IOException {
+		this.resultsList = solrHelper.submitQuery(q, 0, BiomedQA.DOCUMENTS_FOR_QE[docCount]);
 	}
 
 	public LocalQueryExpansion() {
-		this.solrHelper = new SolrHelper();
+		this.solrHelper = new SolrHelper2();
+		//this.solrHelper = new SolrHelper();
 
 	}
 	
@@ -115,5 +119,5 @@ public class LocalQueryExpansion extends QueryExpansion{
 			}
 		}
 	}
-
+	
 }

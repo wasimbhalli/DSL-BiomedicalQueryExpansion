@@ -13,9 +13,9 @@ public class CoDice extends Cooccurrence {
 	HashMap<String, HashMap<String, Double>> dice = new HashMap<>();
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,7 +33,7 @@ public class CoDice extends Cooccurrence {
 			for(String questionKey: questionTerms) {
 				HashMap<String, Double> dictionaryVector = dice.get(questionKey);
 				for (String dictionaryKey: dictionaryVector.keySet()) {
-					calculateCoDegree(questionKey, dictionaryKey, dictionaryVector.get(dictionaryKey));
+					calculateCoDegree(questionKey, dictionaryKey, dictionaryVector.get(dictionaryKey),docCount);
 				}
 			}
 

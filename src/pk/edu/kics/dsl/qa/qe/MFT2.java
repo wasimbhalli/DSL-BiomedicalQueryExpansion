@@ -1,13 +1,14 @@
 package pk.edu.kics.dsl.qa.qe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.util.CollectionHelper;
-import pk.edu.kics.dsl.qa.util.QEHelper;
 
-public class TFIDF extends LocalQueryExpansion {
+public class MFT2 extends LocalQueryExpansion {
+
+
 	
 	@Override
 	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
@@ -17,8 +18,14 @@ public class TFIDF extends LocalQueryExpansion {
 			e.printStackTrace();
 		}
 		
-		HashMap<String, Double> termsTFIDF = QEHelper.getTermsTFIDF(localDictionary, documentFrequency, documentTermFrequencies);
-		
-		return CollectionHelper.sortByComparator(termsTFIDF, false);
+	
+		return CollectionHelper.sortByComparatorInt(localTermsTotalFrequency, false); 
+	
+	
+	
+	
+	
 	}
-}
+
+	
+}//class

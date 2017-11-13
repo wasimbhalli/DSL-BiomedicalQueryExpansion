@@ -11,9 +11,9 @@ public class OddsRatio extends FeatureSelection {
 	HashMap<String, Double> termsScore = new HashMap<>();
 
 	@Override
-	public Map<String, Double> getRelevantTerms(Question question) {
+	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
 		try {
-			super.init(question);
+			super.init(question,docCount);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
