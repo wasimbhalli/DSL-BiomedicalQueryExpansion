@@ -97,7 +97,7 @@ public class ChiSquare extends FeatureSelection {
 		
 		
 		
-		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
+		//ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
 
 
 		

@@ -154,7 +154,7 @@ public class RSV extends FeatureSelection {
 	
 	
 	
-		ExcelWriterPOI.writeResults(sortedTermsScoreRSV, tprResult, fprResult, 1);
+		//ExcelWriterPOI.writeResults(sortedTermsScoreRSV, tprResult, fprResult, 1);
 	
 	
 	

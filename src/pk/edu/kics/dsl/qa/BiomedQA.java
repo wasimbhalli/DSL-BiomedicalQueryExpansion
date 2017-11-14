@@ -56,7 +56,7 @@ public class BiomedQA {
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
 	private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased","ChiSquare","KLDivergence2","RSV2","CoDice","IG","LRF", "MFT", "PRF", "Rocchio","GeneIndex"};
 	//private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased"};
-	public final static int []DOCUMENTS_FOR_QE = {5,10,15,20,25,30,35,40,45,50,55,60};
+	public final static int []DOCUMENTS_FOR_QE = {30,40};
 	public final static int[] TOP_TERMS_TO_SELECT = {5,10,15,20,25,30,35,40,45,50,55,60};
 	public final static boolean DISPLAY_RESULTS = true;
 
@@ -224,7 +224,7 @@ public class BiomedQA {
 		tempQ.setQuestion(queryWords);
 
 		// There are a maximum of ~614 documents for any particular topic
-		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0,9500);//9500
+		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0,1000);//9500
 		IOHelper.writeResult(resultsList, counter);
 	}
 

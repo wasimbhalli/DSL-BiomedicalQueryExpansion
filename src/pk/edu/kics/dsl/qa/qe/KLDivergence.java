@@ -122,7 +122,7 @@ public class KLDivergence extends FeatureSelection {
 		
 		
 		System.out.println("size="+tprResult.size()+","+fprResult.size()+","+sortedTermsScoreAcc.size());
-		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
+		//ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
 		
 		
 		

@@ -98,7 +98,7 @@ public class KLDivergence2 extends FeatureSelection {
 		
 		
 		
-		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
+		//ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
 		
 		
 		return CollectionHelper.sortByComparator(termsScore, false);
