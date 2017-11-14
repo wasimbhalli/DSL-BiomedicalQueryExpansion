@@ -43,14 +43,16 @@ public class ChiSquareProbabilityBased extends FeatureSelection {
 			} else {
 				counter++;
 				
+				
+				System.out.println("terms are="+term);
 				termProbabilityinCorpus = 0.000001;
 			}
 			
 			
 			double ChiSquare = Math.pow(termProbabilityinRelevant - termProbabilityinCorpus, 2)/termProbabilityinCorpus;
 
-			boolean ifAtleastOneAlphabet=term.matches(".*[a-zA-Z]+.*");
-			if(ifAtleastOneAlphabet)
+			//boolean ifAtleastOneAlphabet=term.matches(".*[a-zA-Z]+.*");
+			//if(ifAtleastOneAlphabet)
 			{	termsScore.put(term, ChiSquare );
 			}
 		}
