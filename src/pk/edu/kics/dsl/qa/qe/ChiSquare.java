@@ -62,7 +62,7 @@ public class ChiSquare extends FeatureSelection {
 					(double) falsePositive.get(key) / (BiomedQA.TOTAL_DOCUMENTS - BiomedQA.DOCUMENTS_FOR_QE[docCount]));
 		}
 
-		//int cc = 0;
+		int cc = 0;
 		for (String key : sortedTermsScoreAcc.keySet()) {
 
 			double termTPR = 0.00001;
@@ -87,9 +87,9 @@ public class ChiSquare extends FeatureSelection {
 			fprResult.add(termFPR);
 
 			
-			/*if (cc++ == 9) {
+			if (cc++ == 9) {
 				break;
-			}*/
+			}
 		}
 		
 		
@@ -97,7 +97,7 @@ public class ChiSquare extends FeatureSelection {
 		
 		
 		
-		//ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
+		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
 
 
 		

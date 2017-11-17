@@ -155,7 +155,7 @@ public class SolrHelper {
 	}
 
 	public static long getCorpusTermsFrquencySum() throws IOException, JSONException {
-		String url = urlString + "/select?q=*:*&rows=1&wt=json&indent=true&fl=sttf(contents)";
+		String url = urlString + "/select?q=*:*&rows=1&wt=json&indent=true&fl=sttf(contents)";  //body
 		String response = HttpHelper.getResponse(url,"");
 
 		JSONObject jsonObject = new JSONObject(response);

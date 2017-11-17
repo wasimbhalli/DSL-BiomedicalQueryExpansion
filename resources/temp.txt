@@ -1,0 +1,8 @@
+ifit1<>serum
+ifit1<>proteins
+ifit1<>change
+ifit1<>expression
+ifit1<>association
+ifit1<>disease
+ifit1<>activity
+ifit1<>lupus

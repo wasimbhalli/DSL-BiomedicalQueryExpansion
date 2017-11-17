@@ -18,6 +18,7 @@ import com.google.common.annotations.GwtIncompatible;
 
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
+import pk.edu.kics.dsl.qa.qe.ACC2;
 import pk.edu.kics.dsl.qa.qe.ChiSquare;
 import pk.edu.kics.dsl.qa.qe.ChiSquareProbabilityBased;
 import pk.edu.kics.dsl.qa.qe.GeneIndex;
@@ -54,26 +55,26 @@ public class BiomedQA {
 	private final static double LINEAR_ALPHA = 0.6;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	//private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased","ChiSquare","KLDivergence2","RSV2","CoDice","IG","LRF", "MFT", "PRF", "Rocchio","GeneIndex"};
-	private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased"};
+	//private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased","ChiSquare","KLDivergence2","RSV2","CoDice","IG","LRF","MFT","PRF", "Rocchio","GeneIndex"};//"ChiSquareProbabilityBased","ChiSquare","KLDivergence2","RSV2","CoDice","IG","LRF", "MFT", 
+	private final static String[] QE_TECHNIQUES = {"ChiSquareProbabilityBased","ChiSquare"};
 	public final static int []DOCUMENTS_FOR_QE = {10};
 	public final static int[] TOP_TERMS_TO_SELECT = {10};
 	public final static boolean DISPLAY_RESULTS = true;
 
 	public final static boolean STEMMING_ENABLED = false;
 
-	public final static boolean GLOBAL_QE_ENABLED = false;
+	public final static boolean GLOBAL_QE_ENABLED =false;
 
 	// only applicable for individual feature selection technique - not for combinations
 	public final static SemanticSource SEMANTIC_SOURCE_TECHNIQUE = SemanticSource.MeSH;
-	public final static boolean SEMANTIC_FILTERING_ENABLED = false;
-	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 5;
+	public final static boolean SEMANTIC_FILTERING_ENABLED = false; //false
+	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 1;
 
-	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
-	public final static String SOLR_SERVER ="10.11.10.202";
-	public final static String SOLR_CORE ="ohsumed";//"ohsumed";//"oshumed";//"genomic_html";
-	public final static String CONTENT_FIELD ="contents"; //"body";//"contents";	
-	public final static int TOTAL_DOCUMENTS =348566;//162259;//348566;
+	private final static String QUESTIONS_PATH ="resources/2007topics.txt";//"resources/queries-ohsu.txt";
+	public final static String SOLR_SERVER ="localhost";//"10.11.10.202";
+	public final static String SOLR_CORE ="genomic_html";//"ohsumed";//"ohsumed";//"oshumed";//"genomic_html";
+	public final static String CONTENT_FIELD ="body"; //"body";//"contents";	
+	public final static int TOTAL_DOCUMENTS =162259;//162259;//348566;
 
 
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
@@ -149,8 +150,8 @@ public class BiomedQA {
 
 	private static void processQuestion(Question question, String qeTechnique, int counter,int z,int docCount) throws Exception {
 
-		//SolrHelper2 solrHelper = new SolrHelper2();
-		SolrHelper solrHelper = new SolrHelper();
+		SolrHelper2 solrHelper = new SolrHelper2();
+		//SolrHelper solrHelper = new SolrHelper();
 		String relevantTerms = "";
 		List<String> queryWordsList = StringHelper.stringTokenizer(question.getQuestion());
 		String queryWords = String.join(" ", queryWordsList);

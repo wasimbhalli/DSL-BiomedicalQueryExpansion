@@ -15,14 +15,16 @@ import pk.edu.kics.dsl.qa.BiomedQA;
 import pk.edu.kics.dsl.qa.entity.Question;
 import pk.edu.kics.dsl.qa.entity.SolrResult;
 import pk.edu.kics.dsl.qa.util.SolrHelper;
+import pk.edu.kics.dsl.qa.util.SolrHelper2;
+//import pk.edu.kics.dsl.qa.util.SolrHelper;
 //import pk.edu.kics.dsl.qa.util.SolrHelper2;
 //import pk.edu.kics.dsl.qa.util.SolrHelper;
 import pk.edu.kics.dsl.qa.util.StringHelper;
 
 public class LocalQueryExpansion extends QueryExpansion{
 
-	//private SolrHelper2 solrHelper;
-	private SolrHelper solrHelper;
+	private SolrHelper2 solrHelper;
+	//private SolrHelper solrHelper;
 	protected ArrayList<SolrResult> resultsList;
 	
 	protected ArrayList<String> localDictionary = new ArrayList<>();
@@ -53,8 +55,8 @@ public class LocalQueryExpansion extends QueryExpansion{
 		ArrayList<HashMap<String, Integer>> statistics = solrHelper.getCorpusStatistics(terms);
 		termsTotalFrequency = statistics.get(0);
 		documentFrequency = statistics.get(1);
-		//totalCorpusTermsFrquency = SolrHelper2.getCorpusTermsFrquencySum();
-		totalCorpusTermsFrquency = SolrHelper.getCorpusTermsFrquencySum();
+		totalCorpusTermsFrquency = SolrHelper2.getCorpusTermsFrquencySum();
+		//totalCorpusTermsFrquency = SolrHelper.getCorpusTermsFrquencySum();
 		
 		for(String term: localDictionary) {			
 			for (int i = 0; i < resultsList.size(); i++) {
@@ -84,8 +86,8 @@ public class LocalQueryExpansion extends QueryExpansion{
 	}
 
 	public LocalQueryExpansion() {
-		//this.solrHelper = new SolrHelper2();
-		this.solrHelper = new SolrHelper();
+		this.solrHelper = new SolrHelper2();
+		//this.solrHelper = new SolrHelper();
 
 	}
 	

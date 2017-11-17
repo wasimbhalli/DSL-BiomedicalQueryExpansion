@@ -22,8 +22,8 @@ public class MostFrequentTerms extends LocalQueryExpansion {
 
 		// Call to server and populate resultsList and content words method
 		try {
-			//super.setResultsList(question);
-			//super.SetAllContentWords();
+			super.setResultsList(question);
+			super.SetAllContentWords();
 		} catch (SolrServerException | IOException e) {
 			e.printStackTrace();
 		}
