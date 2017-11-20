@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 public class Evaluation {
 
 	// Set all paths to refer to local resources folder
-	final static String goldStdPath = "resources/trecgen2007.gold.standard.tsv.txt";
+	final static String goldStdPath = "resources/qrels2014.txt";
 	final static String pyScript = "resources/script/trecgen2007_score.py";
 
 	public static void evaluateResults(String experiment) throws IOException {

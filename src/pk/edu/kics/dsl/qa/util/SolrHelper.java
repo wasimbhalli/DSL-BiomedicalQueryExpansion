@@ -52,7 +52,8 @@ public class SolrHelper {
 
 			solrResult.setTopicId(String.valueOf(question.topicId));
 			String pmid = document.get("id").toString();
-			solrResult.setPmid(pmid.substring(pmid.lastIndexOf("/") + 1, pmid.lastIndexOf(".")));
+			solrResult.setPmid(pmid);
+			//solrResult.setPmid(pmid.substring(pmid.lastIndexOf("/") + 1, pmid.lastIndexOf(".")));
 			solrResult.setRank(rank++);
 			solrResult.setStartOffset(0);
 			solrResult.setLength(0);

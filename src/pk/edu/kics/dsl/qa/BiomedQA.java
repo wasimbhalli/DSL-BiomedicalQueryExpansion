@@ -36,17 +36,15 @@ public class BiomedQA {
 		WordEmbedding
 	};
 
-	private final static Boolean COMBINATION_ENABLED = false;
+	private final static Boolean COMBINATION_ENABLED = true;
 	private final static Combination COMBINATION_TECHNIQUE = Combination.Linear;
-	private final static double LINEAR_ALPHA = 0.6;
+	private final static double LINEAR_ALPHA = 0.5;
 
 	// If no technique is to be used, use "Baseline" as QE_TECHNIQUE which means no Query Expansion
-	private final static String[] QE_TECHNIQUES = {"Baseline", "ACC2", "BNS", "Bose", "ChiSquare", "CoCosine", 
-			"CoDice", "CoJaccard", "IdeRegular","MFT", "IDF", "TFIDF", "IG", "KLDivergence", "LRF", 
-			"OddsRatio", "PRF", "Rocchio", "RSV"};
-	public final static int DOCUMENTS_FOR_QE = 5;
-	public final static int TOP_TERMS_TO_SELECT = 5;
-	public final static boolean DISPLAY_RESULTS = true;
+	private final static String[] QE_TECHNIQUES = {"BNS","PRF"};//BNS, PRF // BNS, KLDivergence
+	public static int DOCUMENTS_FOR_QE = 5;
+	public static int TOP_TERMS_TO_SELECT = 5;
+	public final static boolean DISPLAY_RESULTS = false;
 
 	public final static boolean STEMMING_ENABLED = false;
 
@@ -57,45 +55,56 @@ public class BiomedQA {
 	public final static boolean SEMANTIC_FILTERING_ENABLED = false;
 	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 5;
 
-	private final static String QUESTIONS_PATH = "resources/2007topics.txt";
+	private final static String QUESTIONS_PATH = "resources/topics2014.txt";
 	public final static String SOLR_SERVER = "localhost";
-	public final static String SOLR_CORE = "genomic_html";
+	public final static String SOLR_CORE = "csd-data";
 	public final static String CONTENT_FIELD = "body";	
-	public final static int TOTAL_DOCUMENTS = 162259;
+	public final static int TOTAL_DOCUMENTS = 708991;
 
 
 	public static void main(String[] args) throws IOException, SolrServerException, ParseException, JSONException {
 
 		ArrayList<Question> questionsList = IOHelper.ReadQuestions(QUESTIONS_PATH);
+		int dCounter = 5;
+		int tCounter = 5;
 
-		try {
-			String experiment = "";
+		for(dCounter=5; dCounter<= 55; dCounter+= 10){
+			DOCUMENTS_FOR_QE = dCounter;
+			System.out.println("================= Processing Documents: " + dCounter + " =======================");
+			for(tCounter = 5; tCounter<=55; tCounter+= 10){
+				TOP_TERMS_TO_SELECT = tCounter;
+				System.out.println("================= Processing Documents/Terms: " + dCounter + "/" + tCounter  + " =======================");
 
-			if(!COMBINATION_ENABLED) {
-				for (int i = 0; i < QE_TECHNIQUES.length; i++) {
-					experiment = QE_TECHNIQUES[i];
-					IOHelper.deletePreviousResults();
-					processAllQuestions(questionsList, QE_TECHNIQUES[i]);
-					Evaluation.evaluateResults(experiment);
+				try {
+					String experiment = "";
 
-					System.out.println("Done: " + experiment);
+					if(!COMBINATION_ENABLED) {
+						for (int i = 0; i < QE_TECHNIQUES.length; i++) {
+							experiment = QE_TECHNIQUES[i];
+							IOHelper.deletePreviousResults();
+							processAllQuestions(questionsList, QE_TECHNIQUES[i]);
+							Evaluation.evaluateResults(experiment);
+
+							System.out.println("Done: " + experiment);
+						}
+					} else {
+
+						experiment = COMBINATION_TECHNIQUE.toString() + "-" + String.join("+", QE_TECHNIQUES);;
+
+						if(COMBINATION_TECHNIQUE == Combination.Linear) experiment += " (" + LINEAR_ALPHA + ")";
+
+						IOHelper.deletePreviousResults();
+						processAllQuestions(questionsList, null);
+						Evaluation.evaluateResults(experiment);
+
+						System.out.println("Done: " + experiment);
+					}
+
+				}	
+				catch (Exception e) {
+					e.printStackTrace();
 				}
-			} else {
-
-				experiment = COMBINATION_TECHNIQUE.toString() + "-" + String.join("+", QE_TECHNIQUES);;
-
-				if(COMBINATION_TECHNIQUE == Combination.Linear) experiment += " (" + LINEAR_ALPHA + ")";
-
-				IOHelper.deletePreviousResults();
-				processAllQuestions(questionsList, null);
-				Evaluation.evaluateResults(experiment);
-
-				System.out.println("Done: " + experiment);
 			}
-
-		}	
-		catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -182,7 +191,7 @@ public class BiomedQA {
 		tempQ.setQuestion(queryWords);
 
 		// There are a maximum of ~614 documents for any particular topic
-		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0, 650);
+		ArrayList<SolrResult> resultsList = solrHelper.submitQuery(tempQ, 0, 1000);
 		IOHelper.writeResult(resultsList, counter);
 	}
 

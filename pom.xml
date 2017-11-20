@@ -5,6 +5,8 @@
 	<artifactId>BiomedicalQueryExpansion</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>DSL- Biomedical Query Expansion</name>
+
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -39,6 +41,7 @@
 	</repositories>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
