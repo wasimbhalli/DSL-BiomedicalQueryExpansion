@@ -1,6 +1,7 @@
 package pk.edu.kics.dsl.qa.qe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,9 +16,11 @@ public class ChiSquareProbabilityBased extends FeatureSelection {
 	HashMap<String, Double> truePositiveRate = new HashMap<>();
 	HashMap<String, Double> falsePositiveRate = new HashMap<>();
 
+	Map<Integer, String> missingTerms=new HashMap<>();
 	ArrayList<Double> tprResult = new ArrayList<>();
 	ArrayList<Double> fprResult = new ArrayList<>();
 	int counter=0;
+	int queryCount=1;
 
 	@Override
 	public Map<String, Double> getRelevantTerms(Question question,int docCount) {
@@ -42,8 +45,8 @@ public class ChiSquareProbabilityBased extends FeatureSelection {
 				termProbabilityinCorpus = (double) termsTotalFrequency.get(term)/totalCorpusTermsFrquency;
 			} else {
 				counter++;
-				
-				
+				System.out.println("query"+counter+"missing terms=");
+				missingTerms.put(queryCount, term);
 				System.out.println("terms are="+term);
 				termProbabilityinCorpus = 0.000001;
 			}
@@ -52,11 +55,13 @@ public class ChiSquareProbabilityBased extends FeatureSelection {
 			double ChiSquare = Math.pow(termProbabilityinRelevant - termProbabilityinCorpus, 2)/termProbabilityinCorpus;
 
 			//boolean ifAtleastOneAlphabet=term.matches(".*[a-zA-Z]+.*");
-			//if(ifAtleastOneAlphabet)
+			//boolean checkNum=term.matches(".*\\d+.*");
+			//if(ifAtleastOneAlphabet) //&& !checkNum
 			{	termsScore.put(term, ChiSquare );
 			}
 		}
 
+		queryCount++;
 		
 		
 		System.out.println("counter="+counter);
@@ -112,8 +117,9 @@ public class ChiSquareProbabilityBased extends FeatureSelection {
 		ExcelWriterPOI.writeResults(sortedTermsScoreAcc, tprResult, fprResult, 1);
 
 		
+		System.out.println(".....................");
 		
-		
+		Arrays.asList(missingTerms);
 		
 
 		

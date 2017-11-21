@@ -71,7 +71,7 @@ public class BiomedQA {
 	public final static int TOP_TERMS_FOR_SEMANTIC_FILTERING = 1;
 
 	private final static String QUESTIONS_PATH ="resources/2007topics.txt";//"resources/queries-ohsu.txt";
-	public final static String SOLR_SERVER ="localhost";//"10.11.10.202";
+	public final static String SOLR_SERVER ="10.11.10.207";//"10.11.10.202";
 	public final static String SOLR_CORE ="genomic_html";//"ohsumed";//"ohsumed";//"oshumed";//"genomic_html";
 	public final static String CONTENT_FIELD ="body"; //"body";//"contents";	
 	public final static int TOTAL_DOCUMENTS =162259;//162259;//348566;
@@ -137,7 +137,7 @@ public class BiomedQA {
 		int counter = 1;
 		int cc=0;
 		for (Question question : questionsList) {
-			System.out.println("ForQuery="+cc);
+			System.out.println("ForQuery="+counter);
 			cc++;
 			processQuestion(question, qeTechnique, counter++,z,docCount);
 			
